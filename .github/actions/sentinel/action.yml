@@ -1,0 +1,68 @@
+name: 'Sentinel Security Scan'
+description: 'AI-powered security hardening for Python projects'
+
+inputs:
+  api-key:
+    description: 'Mistral API key'
+    required: false
+  ai-enabled:
+    description: 'Enable AI analysis'
+    required: false
+    default: 'true'
+  ai-backend:
+    description: 'AI backend (cloud or local)'
+    required: false
+    default: 'cloud'
+  fail-on:
+    description: 'Fail CI if severity is at or above this level'
+    required: false
+    default: 'high'
+  dast-url:
+    description: 'Enable DAST scanning against the given URL'
+    required: false
+  skip-sast:
+    description: 'Skip SAST scanning'
+    required: false
+    default: 'false'
+  skip-sca:
+    description: 'Skip SCA scanning'
+    required: false
+    default: 'false'
+  upload-sarif:
+    description: 'Upload SARIF report to GitHub Code Scanning'
+    required: false
+    default: 'true'
+  working-directory:
+    description: 'Directory to scan'
+    required: false
+    default: '.'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Sentinel scan
+      id: run-sentinel
+      shell: bash
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/app \
+          -v /app/rules:/app/rules \
+          -e MISTRAL_API_KEY=${{ inputs.api-key }} \
+          ghcr.io/${{ github.repository }}/sentinel:latest \
+          scan ${{ inputs.working-directory }} \
+          --ci \
+          --fail-on ${{ inputs.fail-on }} \
+          ${{ inputs.ai-enabled == 'true' && '--ai' || '--no-ai' }} \
+          --ai-backend ${{ inputs.ai-backend }} \
+          ${{ inputs.dast-url && format('--dast {0}', inputs.dast-url) || '' }} \
+          ${{ inputs.skip-sast == 'true' && '--skip-sast' || '' }} \
+          ${{ inputs.skip-sca == 'true' && '--skip-sca' || '' }} \
+          --output-format sarif \
+          --output-file /app/sentinel-report.sarif
+
+    - name: Upload SARIF to GitHub Code Scanning
+      if: inputs.upload-sarif == 'true'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ github.workspace }}/sentinel-report.sarif
+        category: sentinel

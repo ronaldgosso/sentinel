@@ -1,0 +1,22 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Sentinel scan
+        uses: your-org/sentinel-action@v1
+        with:
+          api-key: ${{ secrets.MISTRAL_API_KEY }}
+          fail-on: high
+          upload-sarif: true
+          # Optional: enable DAST
+          # dast-url: http://localhost:8000
