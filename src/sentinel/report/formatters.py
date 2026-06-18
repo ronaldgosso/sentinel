@@ -27,7 +27,7 @@ def to_sarif(findings: List[Dict[str, Any]], output_file: Path) -> None:
                     "driver": {
                         "name": "Sentinel",
                         "version": "0.1.0",
-                        "informationUri": "https://github.com/your-org/sentinel",
+                        "informationUri": "https://github.com/ronaldgosso/sentinel",
                         "rules": [],
                     }
                 },

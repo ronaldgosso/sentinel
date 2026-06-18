@@ -1,5 +1,6 @@
 name: 'Sentinel Security Scan'
 description: 'AI-powered security hardening for Python projects'
+author: 'Ronald Gosso'
 
 inputs:
   api-key:
