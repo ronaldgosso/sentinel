@@ -20,3 +20,27 @@ Provide a JSON response with the following fields:
 
 Return ONLY valid JSON, no extra text.
 """
+
+AUTOFIX_PROMPT = """
+You are an expert security engineer and Python developer.
+We found a vulnerability in the following code.
+Vulnerability: {vuln_type}
+Location: {location}
+Description: {message}
+
+Here is the code block containing the vulnerability:
+```python
+{code_context}
+```
+
+Please fix the vulnerability. Provide the EXACT original text that needs to be replaced, and the EXACT replacement text.
+Return your response as a valid JSON object with the following format:
+{{
+  "target": "exact string to replace (must match the source code perfectly)",
+  "replacement": "the secure code to replace it with"
+}}
+
+IMPORTANT:
+- Only return the JSON. No markdown formatting, no explanations.
+- The `target` string must be an exact substring of the original code block so that `source.replace(target, replacement)` works.
+"""
