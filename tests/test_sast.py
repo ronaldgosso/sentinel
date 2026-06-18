@@ -10,8 +10,7 @@ def test_sql_injection_detector() -> None:
     code = """
 import sqlite3
 email = "test"
-query = f"SELECT * FROM users WHERE email = '{email}'"
-cursor.execute(query)
+cursor.execute(f"SELECT * FROM users WHERE email = '{email}'")
 """
     import ast
 
@@ -39,7 +38,7 @@ def test_full_scanner() -> None:
     with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("""
 import hashlib
-SECRET = "topsecret"
+SECRET_KEY = "topsecret"
 def foo():
     return hashlib.md5(b"test").hexdigest()
 """)
