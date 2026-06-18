@@ -1,0 +1,49 @@
+- id: sql_injection
+  name: "SQL Injection"
+  cwe: "CWE-89"
+  severity: Critical
+  description: "SQL injection occurs when user input is concatenated into SQL queries."
+  remediation: "Use parameterised queries: cursor.execute('SELECT * FROM users WHERE id=?', (user_id,))"
+  pattern_type: "regex"
+  pattern: "execute.*SELECT.*%|execute.*SELECT.*\\.format|execute.*f\"SELECT"
+  file_patterns: ["*.py"]
+
+- id: xss
+  name: "Cross-Site Scripting (XSS)"
+  cwe: "CWE-79"
+  severity: High
+  description: "XSS occurs when untrusted data is rendered in HTML without escaping."
+  remediation: "Use autoescaping in templates. Avoid |safe filter on untrusted input."
+  pattern_type: "regex"
+  pattern: "{{.*?\\|safe}}|mark_safe\\("
+  file_patterns: ["*.py", "*.html", "*.jinja", "*.twig"]
+
+- id: command_injection
+  name: "Command Injection"
+  cwe: "CWE-78"
+  severity: Critical
+  description: "OS command injection via subprocess calls with shell=True."
+  remediation: "Use subprocess.run(['ls', '-la']) and avoid shell=True."
+  pattern_type: "regex"
+  pattern: "subprocess\\.(call|Popen).*shell\\s*=\\s*True"
+  file_patterns: ["*.py"]
+
+- id: hardcoded_secrets
+  name: "Hardcoded Secrets"
+  cwe: "CWE-798"
+  severity: Critical
+  description: "API keys, passwords, and tokens hardcoded in source code."
+  remediation: "Use environment variables: os.getenv('SECRET_KEY')"
+  pattern_type: "regex"
+  pattern: "(API_KEY|SECRET|PASSWORD)\\s*=\\s*['\"][^'\"]+['\"]"
+  file_patterns: ["*.py", "*.env", "*.conf"]
+
+- id: insecure_crypto
+  name: "Insecure Cryptographic Algorithm"
+  cwe: "CWE-326"
+  severity: High
+  description: "Use of weak or broken cryptographic algorithms (MD5, SHA1, DES, RC4)."
+  remediation: "Replace with SHA-256, SHA-3, or AES-GCM."
+  pattern_type: "regex"
+  pattern: "hashlib\\.(md5|sha1)|DES\\.new|ARC4"
+  file_patterns: ["*.py"]
