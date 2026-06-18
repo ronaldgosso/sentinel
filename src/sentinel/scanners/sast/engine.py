@@ -2,7 +2,7 @@ import ast
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 
-from .rules import Rule, load_rules
+from .rule_loader import Rule, load_rules
 from .detectors import (
     detect_sql_injection,
     detect_xss,
