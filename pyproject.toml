@@ -4,12 +4,22 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sentinel-security"
-version = "0.1.0"
+version = "1.0.0"
 description = "AI-powered security hardening for Python developers"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "Ronald Gosso", email = "ronaldgosso@gmail.com"}]
+keywords = ["security", "vulnerability", "scanner", "sast", "sca", "dast", "ai"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
 dependencies = [
     "click>=8.1.0",
     "rich>=13.7.0",
