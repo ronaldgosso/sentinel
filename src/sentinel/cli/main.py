@@ -5,38 +5,20 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.prompt import Prompt, Confirm
 from rich import box
-import time
 from pathlib import Path
 
 from ..scanners.sast.engine import SASTScanner
 from ..scanners.sca.engine import SCAScanner
-from ..scanners.dast.engine import DASTScanner  # new import
+from ..scanners.dast.engine import DASTScanner
+from ..ai.enricher import AIEnricher
 from typing import Any, Optional
+import os
 
 console = Console()
 
 
-def combine_findings(sast_findings: Any, sca_findings: Any, dast_findings: Any) -> Any:
-    """Combine SAST, SCA, and DAST findings into one list."""
-    combined = []
-    for f in sca_findings:
-        combined.append(f.to_dict())
-    for f in sast_findings:
-        combined.append(f.to_dict())
-    for f in dast_findings:
-        combined.append(f.to_dict())
-    return combined
-
-
-def run_scan(
-    path: str,
-    ai_enabled: bool,
-    skip_sast: bool,
-    skip_sca: bool,
-    dast_url: Optional[str] = None,
-    progress: bool = True,
-) -> Any:
-    """Orchestrate scanning and return combined findings."""
+def run_scan(path: str, skip_sast: bool, skip_sca: bool, dast_url: Optional[str] = None) -> Any:
+    """Orchestrate scanning without AI, return combined findings."""
     combined = []
     if not skip_sast:
         scanner_sast = SASTScanner()
@@ -55,15 +37,24 @@ def run_scan(
 
 @click.command()  # type: ignore[misc]
 @click.argument("path", default=".", type=click.Path(exists=True))  # type: ignore[misc]
-@click.option("--ai/--no-ai", default=True, help="Enable/disable AI analysis (Phase 4)")  # type: ignore[misc]
+@click.option("--ai/--no-ai", default=True, help="Enable/disable AI analysis")  # type: ignore[misc]
+@click.option(
+    "--ai-backend", type=click.Choice(["local", "cloud"]), default="cloud", help="AI backend"
+)  # type: ignore[misc]
+@click.option("--ai-api-key", help="Mistral API key (overrides env var)")  # type: ignore[misc]
 @click.option("--ci", is_flag=True, help="CI mode – non-interactive, exit with code")  # type: ignore[misc]
 @click.option("--skip-sast", is_flag=True, help="Skip SAST scanning")  # type: ignore[misc]
 @click.option("--skip-sca", is_flag=True, help="Skip SCA scanning")  # type: ignore[misc]
-@click.option(
-    "--dast", help="Enable DAST scanning against the given target URL (e.g., http://localhost:8000)"
-)  # type: ignore[misc]
+@click.option("--dast", help="Enable DAST scanning against the given target URL")  # type: ignore[misc]
 def cli(
-    path: str, ai: bool, ci: bool, skip_sast: bool, skip_sca: bool, dast: Optional[str]
+    path: str,
+    ai: bool,
+    ai_backend: str,
+    ai_api_key: str,
+    ci: bool,
+    skip_sast: bool,
+    skip_sca: bool,
+    dast: Optional[str],
 ) -> None:
     """Sentinel – AI-Powered Security Hardening."""
     console.print(
@@ -77,11 +68,21 @@ def cli(
     else:
         console.print(f"Scanning [cyan]{path}[/] ...")
 
+    if ai and ai_backend == "cloud" and not ai_api_key and not os.getenv("MISTRAL_API_KEY"):
+        if not ci:
+            console.print(
+                "[yellow]⚠️ No Mistral API key found. Set MISTRAL_API_KEY or use --ai-api-key.[/]"
+            )
+            do_enter = Confirm.ask("Would you like to enter your API key now?")
+            if do_enter:
+                ai_api_key = Prompt.ask("Mistral API key", password=True)
+
     if ci:
         console.print("[yellow]CI mode – running non-interactive scan.[/]")
-        combined = run_scan(
-            path, ai_enabled=ai, skip_sast=skip_sast, skip_sca=skip_sca, dast_url=dast
-        )
+        combined = run_scan(path, skip_sast=skip_sast, skip_sca=skip_sca, dast_url=dast)
+        if ai:
+            enricher = AIEnricher(api_key=ai_api_key, use_local=(ai_backend == "local"))
+            combined = enricher.enrich(combined)
         critical_high = [f for f in combined if f["severity"] in ("Critical", "High")]
         console.print(f"✅ Scan complete. Found {len(critical_high)} Critical/High issues.")
         if critical_high:
@@ -89,7 +90,7 @@ def cli(
         else:
             raise SystemExit(0)
 
-    # Interactive flow – run scan with progress
+    # Interactive flow
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -104,22 +105,20 @@ def cli(
         if dast:
             tasks.append(progress.add_task("[red]DAST: testing web application...", total=None))
 
-        # Actually run the scan
-        combined = run_scan(
-            path, ai_enabled=ai, skip_sast=skip_sast, skip_sca=skip_sca, dast_url=dast
-        )
+        # Run scan without AI
+        combined = run_scan(path, skip_sast=skip_sast, skip_sca=skip_sca, dast_url=dast)
 
         for task in tasks:
             progress.update(task, completed=True)
 
-        if ai:
-            t_ai = progress.add_task(
-                "[magenta]AI: Mistral analysing findings... (Phase 4)", total=None
-            )
-            time.sleep(0.5)
-            progress.update(t_ai, completed=True)
+        # AI enrichment
+        if ai and combined:
+            ai_task = progress.add_task("[magenta]AI: Mistral analysing findings...", total=None)
+            enricher = AIEnricher(api_key=ai_api_key, use_local=(ai_backend == "local"))
+            combined = enricher.enrich(combined)
+            progress.update(ai_task, completed=True)
 
-    # Show results (same as before, now with DAST findings)
+    # Display results
     if not combined:
         console.print("[bold green]✅ No security issues found![/]")
         return
@@ -127,7 +126,7 @@ def cli(
     # Count by severity
     severity_counts = {"Critical": 0, "High": 0, "Medium": 0, "Low": 0}
     for f in combined:
-        sev = f["severity"]
+        sev = f.get("severity", "Medium")
         if sev in severity_counts:
             severity_counts[sev] += 1
         else:
@@ -155,44 +154,35 @@ def cli(
     for idx, f in enumerate(combined, 1):
         sev_color = (
             "red"
-            if f["severity"] == "Critical"
+            if f.get("severity") == "Critical"
             else "orange1"
-            if f["severity"] == "High"
+            if f.get("severity") == "High"
             else "yellow"
-            if f["severity"] == "Medium"
+            if f.get("severity") == "Medium"
             else "green"
         )
-        # Determine type from id
-        if "sca" in f["id"]:
+        # Type
+        if "sca" in f.get("id", ""):
             type_display = "SCA Vulnerability"
-        elif "dast" in f["id"]:
+        elif "dast" in f.get("id", ""):
             type_display = "DAST Vulnerability"
         else:
-            type_display = f["id"].replace("_", " ").title()
+            type_display = f.get("id", "Unknown").replace("_", " ").title()
         ai_mark = "✅" if f.get("ai_confirmed", False) else "❌"
-        loc = f["location"]
-        if ":" in loc:
-            parts = loc.split(":")
-            if len(parts) >= 2 and parts[-1].isdigit():
-                loc_file = Path(parts[0]).name
-                loc_line = parts[-1]
-            else:
-                loc_file = loc[:20]
-                loc_line = str(f.get("line", ""))
-        else:
-            loc_file = loc[:20]
-            loc_line = str(f.get("line", ""))
+        loc = f.get("location", "")
+        loc_display = Path(loc).name if ":" not in loc else loc[:20]
+        line_display = str(f.get("line", ""))
         table.add_row(
             str(idx),
-            f"[{sev_color}]{f['severity']}[/]",
-            type_display,
-            loc_file[:20],
-            loc_line,
+            f"[{sev_color}]{f.get('severity', 'Medium')}[/]",
+            type_display[:20],
+            loc_display[:20],
+            line_display,
             ai_mark,
         )
     console.print(table)
 
-    # Interactive drill-down
+    # Drill-down loop
     while True:
         choice = Prompt.ask("Enter #[bold]#[/] to see details, or [bold]q[/] to quit", default="q")
         if choice.lower() == "q":
@@ -207,16 +197,18 @@ def cli(
                 f = combined[fidx - 1]
                 sev_color = (
                     "red"
-                    if f["severity"] == "Critical"
+                    if f.get("severity") == "Critical"
                     else "orange1"
-                    if f["severity"] == "High"
+                    if f.get("severity") == "High"
                     else "yellow"
-                    if f["severity"] == "Medium"
+                    if f.get("severity") == "Medium"
                     else "green"
                 )
-                console.rule(f"[bold]🔎 Finding #{fidx} – {f['id'].replace('_', ' ').title()}[/]")
-                console.print(f"[bold]Severity:[/] [{sev_color}]{f['severity']}[/]")
-                console.print(f"[bold]Location:[/] {f['location']}")
+                console.rule(
+                    f"[bold]🔎 Finding #{fidx} – {f.get('id', 'Unknown').replace('_', ' ').title()}[/]"
+                )
+                console.print(f"[bold]Severity:[/] [{sev_color}]{f.get('severity', 'Medium')}[/]")
+                console.print(f"[bold]Location:[/] {f.get('location', 'N/A')}")
                 if f.get("line"):
                     console.print(f"[bold]Line:[/] {f['line']}")
                 console.print(f"[bold]CWE:[/] {f.get('cwe', 'N/A')}")
@@ -224,6 +216,10 @@ def cli(
                 console.print(
                     f"\n[bold yellow]Description:[/]\n{f.get('message', 'No description')}"
                 )
+                if f.get("attack_scenario"):
+                    console.print(f"\n[bold red]Attack scenario:[/]\n{f['attack_scenario']}")
+                if f.get("justification"):
+                    console.print(f"\n[bold cyan]AI Justification:[/] {f['justification']}")
                 console.print(
                     f"\n[bold green]Hardening suggestion:[/]\n{f.get('fix', 'No fix provided')}"
                 )
@@ -232,7 +228,6 @@ def cli(
                     "Apply this fix automatically? (--fix not yet implemented)", default=False
                 ):
                     console.print("[bold yellow]⚠️ Auto-fix is coming in Phase 5.[/]")
-                    console.print("[dim]For now, please manually apply the suggested change.[/]")
                 input("\nPress Enter to return to the dashboard...")
             else:
                 console.print("[red]Invalid finding number.[/]")
