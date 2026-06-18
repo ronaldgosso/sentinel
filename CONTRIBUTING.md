@@ -1,52 +1,36 @@
 # Contributing to Sentinel
 
-Thank you for your interest in contributing to Sentinel! We welcome bug reports, feature requests, and pull requests from the community.
+We love contributions! Here\'s how you can help.
 
-## Table of Contents
+## Reporting Issues
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [Development Environment](#development-environment)
-- [Adding New Rules](#adding-new-rules)
-- [Submitting Pull Requests](#submitting-pull-requests)
+- Use the [issue tracker](https://github.com/ronaldgosso/sentinel/issues).
+- Provide a minimal reproducible example.
 
-## Code of Conduct
+## Suggesting Features
 
-By participating in this project, you agree to maintain a respectful and inclusive environment for everyone. 
+- Open a feature request issue.
+- Explain the use case and expected behaviour.
 
-## Getting Started
+## Adding a New Detector
 
-1. Fork the repository on GitHub.
-2. Clone your fork locally.
-3. Create a new branch for your feature or bugfix.
+1. Create a new Python file in `src/sentinel/scanners/sast/detectors/`.
+2. Implement a function that takes `(ast.AST, source, filename)` and returns a list of dicts.
+3. Add your function to `DETECTOR_MAP` in `src/sentinel/scanners/sast/engine.py`.
+4. Add a corresponding YAML rule in `rules/`.
 
-## Development Environment
+## Pull Request Process
 
-We recommend using a virtual environment (e.g., venv or conda). 
+1. Fork the repo and create a branch.
+2. Run `pre-commit install`.
+3. Write tests for your changes.
+4. Update documentation if needed.
+5. Submit a PR against the `main` branch.
 
-```bash
-git clone https://github.com/ronaldgosso/sentinel.git
-cd sentinel
-python -m venv venv
-source venv/bin/activate
-pip install -e ".[dev]"
-```
+## Code Style
 
-Ensure you run tests and linters before submitting code:
+- Follow PEP 8 (enforced by Ruff).
+- Add type hints.
+- Keep code coverage above 80%.
 
-```bash
-pytest
-ruff check src/
-mypy src/
-```
-
-## Adding New Rules
-
-Sentinel uses YAML-based rules for SAST scanning. You can add new rules in the rules/sast/ directory. Each rule must define an ID, a description, a severity level, and a regular expression pattern to match vulnerable code.
-
-## Submitting Pull Requests
-
-1. Commit your changes with clear, descriptive commit messages.
-2. Push your branch to your fork.
-3. Open a Pull Request against the main branch.
-4. Ensure all CI checks pass.
+Thank you!
