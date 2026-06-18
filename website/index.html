@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel - AI-Powered Security Hardening</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Sentinel</div>
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="https://github.com/ronaldgosso/sentinel" class="nav-btn">GitHub</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>AI-Powered Security Hardening for <span class="highlight">Python Developers</span></h1>
+            <p>Stop shipping vulnerabilities to production. Sentinel catches critical flaws before you merge, with intelligent AI-driven auto-fixes.</p>
+            <div class="hero-ctas">
+                <a href="https://ronaldgosso.github.io/sentinel/docs/" class="btn primary">Get Started</a>
+                <a href="https://github.com/ronaldgosso/sentinel" class="btn secondary">Star on GitHub</a>
+            </div>
+            <div class="install-snippet">
+                <code>pip install sentinel-security</code>
+                <button id="copy-btn">Copy</button>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="terminal">
+                <div class="terminal-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <div class="terminal-body" id="terminal-typing">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="problem-solution">
+        <div class="card problem">
+            <h3>The Problem</h3>
+            <p>Vulnerabilities often slip past code reviews, shipping straight to production. Traditional scanners output massive JSON logs that nobody reads, causing alert fatigue.</p>
+        </div>
+        <div class="card solution">
+            <h3>The Solution</h3>
+            <p>Sentinel runs directly in your CI or local terminal. It uses Mistral AI to filter noise, explain the actual risk, and provide one-click code remediations.</p>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <h2>Features</h2>
+        <div class="grid">
+            <div class="feature-card">
+                <h4>Static Analysis (SAST)</h4>
+                <p>Detects SQLi, XSS, hardcoded secrets, and insecure crypto using custom YAML rules.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Dependencies (SCA)</h4>
+                <p>Audits your supply chain against OSV.dev and NVD to stop compromised packages.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Dynamic Testing (DAST)</h4>
+                <p>Tests running web apps on the fly for injection points and misconfigured headers.</p>
+            </div>
+            <div class="feature-card highlight-card">
+                <h4>AI Triage & Auto-fix</h4>
+                <p>Mistral AI analyzes findings, explains attack vectors, and safely applies patches to your codebase.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <h2>How It Works</h2>
+        <div class="diagram">
+            <div class="step">1. Scan Project</div>
+            <div class="arrow">→</div>
+            <div class="step">2. Detect Flaws</div>
+            <div class="arrow">→</div>
+            <div class="step highlight-step">3. AI Enrichment</div>
+            <div class="arrow">→</div>
+            <div class="step">4. Auto-Fix</div>
+        </div>
+    </section>
+
+    <section class="ci-cd">
+        <h2>Built for CI/CD</h2>
+        <p>Integrate easily with our official GitHub Action.</p>
+        <img src="https://github.com/ronaldgosso/sentinel/workflows/CI/badge.svg" alt="CI Status">
+        <br><br>
+        <a href="https://ronaldgosso.github.io/sentinel/docs/ci-cd.html" class="btn outline">View CI/CD Guide</a>
+    </section>
+
+    <footer>
+        <p>Open Source &bull; MIT License &bull; <a href="https://github.com/ronaldgosso/sentinel">GitHub</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
