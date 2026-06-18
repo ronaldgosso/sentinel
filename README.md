@@ -1,5 +1,7 @@
 # Sentinel
 
+![Sentinel Logo](assets/logo.png)
+
 **Sentinel** is an AI-powered security hardening tool for Python developers. It provides seamless integration of Static Application Security Testing (SAST), Software Composition Analysis (SCA), and Dynamic Application Security Testing (DAST) with actionable, AI-driven auto-fixes.
 
 [![PyPI version](https://badge.fury.io/py/sentinel-security.svg)](https://badge.fury.io/py/sentinel-security)
