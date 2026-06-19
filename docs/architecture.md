@@ -1,3 +1,0 @@
-# Architecture
-
-High-level design.

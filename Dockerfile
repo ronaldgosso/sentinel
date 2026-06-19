@@ -3,29 +3,28 @@ FROM python:3.10-slim AS builder
 
 WORKDIR /build
 
-# Install dependencies
-COPY pyproject.toml .
-RUN pip install --no-cache-dir --user .
+# Install build tools
+RUN pip install --no-cache-dir build
 
-# Copy source
-COPY src/ /build/src/
-COPY rules/ /build/rules/
-COPY .sentinel.yml* /build/
+# Copy project files
+COPY pyproject.toml README.md ./
+COPY src/ ./src/
+COPY rules/ ./rules/
 
-# Build the package
-RUN pip install --no-cache-dir --user .
+# Build the wheel
+RUN python -m build --wheel
 
 # Final image
 FROM python:3.10-slim
 
-# Copy installed package from builder
-COPY --from=builder /root/.local /root/.local
-COPY --from=builder /build/rules /app/rules
-
-# Make sure scripts in .local are usable
-ENV PATH=/root/.local/bin:$PATH
-
 WORKDIR /app
+
+# Install the built wheel
+COPY --from=builder /build/dist/*.whl /tmp/
+RUN pip install --no-cache-dir /tmp/*.whl && rm -rf /tmp/*.whl
+
+# Copy rules since they might be needed outside the package
+COPY --from=builder /build/rules /app/rules
 
 # Entrypoint
 COPY entrypoint.sh /entrypoint.sh

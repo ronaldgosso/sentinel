@@ -33,4 +33,17 @@ We love contributions! Here\'s how you can help.
 - Add type hints.
 - Keep code coverage above 80%.
 
+## Release Process
+
+The release process for PyPI and Docker is fully automated using GitHub Actions.
+
+To publish a new version:
+
+1. Update the version number in `pyproject.toml`.
+2. Commit your changes: `git commit -am "Bump version to vX.Y.Z"`
+3. Tag the commit with the new version: `git tag vX.Y.Z`
+4. Push the commit and the tag to GitHub: `git push origin main && git push origin vX.Y.Z`
+
+Pushing the tag will automatically trigger the **Publish to PyPI** workflow (provided all tests pass). Once that completes successfully, the **Docker Build** workflow will automatically build and publish the latest Docker image to the registry.
+
 Thank you!
