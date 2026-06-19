@@ -5,8 +5,8 @@ from ...scanners.sca.vuln_db import get_vulnerabilities, init_db
 console = Console()
 
 
-@click.command()  # type: ignore[misc]
-@click.option("--force", is_flag=True, help="Force refresh of all cached data")  # type: ignore[misc]
+@click.command()
+@click.option("--force", is_flag=True, help="Force refresh of all cached data")
 def update_db(force: bool) -> None:
     """Update the vulnerability database cache."""
     init_db()

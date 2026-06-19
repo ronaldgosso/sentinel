@@ -38,32 +38,32 @@ def run_scan(
     return combined
 
 
-@click.command()  # type: ignore[misc]
-@click.argument("path", default=".", type=click.Path(exists=True))  # type: ignore[misc]
-@click.option("--ai/--no-ai", default=True, help="Enable/disable AI analysis")  # type: ignore[misc]
+@click.command()
+@click.argument("path", default=".", type=click.Path(exists=True))
+@click.option("--ai/--no-ai", default=True, help="Enable/disable AI analysis")
 @click.option(
     "--ai-backend", type=click.Choice(["local", "cloud"]), default="cloud", help="AI backend"
-)  # type: ignore[misc]
-@click.option("--ai-api-key", help="Mistral API key (optional, overrides env)")  # type: ignore[misc]
-@click.option("--ci", is_flag=True, help="CI mode – non-interactive, exit with code")  # type: ignore[misc]
-@click.option("--skip-sast", is_flag=True, help="Skip SAST scanning")  # type: ignore[misc]
-@click.option("--skip-sca", is_flag=True, help="Skip SCA scanning")  # type: ignore[misc]
-@click.option("--dast", help="Enable DAST scanning against the given target URL")  # type: ignore[misc]
+)
+@click.option("--ai-api-key", help="Mistral API key (optional, overrides env)")
+@click.option("--ci", is_flag=True, help="CI mode – non-interactive, exit with code")
+@click.option("--skip-sast", is_flag=True, help="Skip SAST scanning")
+@click.option("--skip-sca", is_flag=True, help="Skip SCA scanning")
+@click.option("--dast", help="Enable DAST scanning against the given target URL")
 @click.option(
     "--fix",
     is_flag=True,
     help="Apply auto-fixes (interactive) or in CI mode apply all possible fixes",
-)  # type: ignore[misc]
+)
 @click.option(
     "--output-format", type=click.Choice(["json", "sarif", "html"]), help="Export report format"
-)  # type: ignore[misc]
-@click.option("--output-file", help="Output file for report (default: sentinel-report.<format>)")  # type: ignore[misc]
+)
+@click.option("--output-file", help="Output file for report (default: sentinel-report.<format>)")
 @click.option(
     "--fail-on",
     type=click.Choice(["critical", "high", "medium", "low"]),
     default="high",
     help="Fail CI if any finding at or above this severity is found",
-)  # type: ignore[misc]
+)
 def scan(
     path: str,
     ai: bool,

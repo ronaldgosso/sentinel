@@ -5,7 +5,7 @@ from rich.console import Console
 console = Console()
 
 
-@click.command()  # type: ignore[misc]
+@click.command()
 def init() -> None:
     """Create a default .sentinel.yml configuration file."""
     config_path = Path.cwd() / ".sentinel.yml"

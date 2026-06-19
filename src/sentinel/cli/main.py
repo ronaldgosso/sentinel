@@ -4,7 +4,7 @@ from .commands.init import init
 from .commands.update_db import update_db
 
 
-@click.group()  # type: ignore[misc]
+@click.group()
 def cli() -> None:
     """Sentinel – AI-Powered Security Hardening."""
     pass
