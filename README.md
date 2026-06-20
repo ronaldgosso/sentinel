@@ -1,10 +1,10 @@
 # Sentinel - AI-Powered Security Hardening
 
-![Sentinel Logo](assets/logo.png)
+<img src="assets/logo.png" alt="Sentinel Logo" style="max-width: 100%; height: auto; display: block; margin: 0 auto 20px;">
 
 [![PyPI version](https://badge.fury.io/py/sentinel-scanner.svg)](https://badge.fury.io/py/sentinel-scanner)
 [![GitHub Actions](https://github.com/ronaldgosso/sentinel/workflows/CI/badge.svg)](https://github.com/ronaldgosso/sentinel/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 **Sentinel** is a developer-first CLI tool that finds security vulnerabilities in Python projects and provides AI-powered fixes - all in an interactive terminal dashboard.
 
@@ -46,7 +46,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT
+GPL-3.0
 
 ## Show your support
 
