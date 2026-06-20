@@ -18,13 +18,20 @@ def get_db_connection() -> sqlite3.Connection:
 def init_db() -> None:
     """Create tables if they don't exist."""
     with get_db_connection() as conn:
+        # Check if cache table needs migration (does it have 'ecosystem' column?)
+        cursor = conn.execute("PRAGMA table_info(cache)")
+        columns = [row["name"] for row in cursor.fetchall()]
+        if columns and "ecosystem" not in columns:
+            conn.execute("DROP TABLE cache")
+
         conn.execute("""
             CREATE TABLE IF NOT EXISTS cache (
                 package TEXT,
                 version TEXT,
+                ecosystem TEXT,
                 vuln_data TEXT,   -- JSON list of vulnerabilities
                 queried_at TIMESTAMP,
-                PRIMARY KEY (package, version)
+                PRIMARY KEY (package, version, ecosystem)
             )
         """)
         conn.execute("""
@@ -38,11 +45,11 @@ def init_db() -> None:
         conn.commit()
 
 
-def query_osv(package: str, version: str) -> Any:
+def query_osv(package: str, version: str, ecosystem: str = "PyPI") -> Any:
     """Query OSV.dev API for vulnerabilities of a specific package version."""
     url = "https://api.osv.dev/v1/query"
     payload = {
-        "package": {"name": package, "ecosystem": "PyPI"},
+        "package": {"name": package, "ecosystem": ecosystem},
         "version": version,
     }
     try:
@@ -97,7 +104,9 @@ def get_cvss_from_nvd(cve_id: str) -> Optional[Dict[str, Any]]:
     return None
 
 
-def get_vulnerabilities(package: str, version: str, force_refresh: bool = False) -> Any:
+def get_vulnerabilities(
+    package: str, version: str, ecosystem: str = "PyPI", force_refresh: bool = False
+) -> Any:
     """Get vulnerabilities for a package version, with caching."""
     if not version:
         return []  # we need a version to query OSV
@@ -106,8 +115,8 @@ def get_vulnerabilities(package: str, version: str, force_refresh: bool = False)
     if not force_refresh:
         with get_db_connection() as conn:
             row = conn.execute(
-                "SELECT vuln_data, queried_at FROM cache WHERE package = ? AND version = ?",
-                (package, version),
+                "SELECT vuln_data, queried_at FROM cache WHERE package = ? AND version = ? AND ecosystem = ?",
+                (package, version, ecosystem),
             ).fetchone()
             if row:
                 # refresh if older than 24h
@@ -116,7 +125,7 @@ def get_vulnerabilities(package: str, version: str, force_refresh: bool = False)
                     return json.loads(row["vuln_data"])
 
     # Query OSV
-    vulns = query_osv(package, version)
+    vulns = query_osv(package, version, ecosystem)
     # Enrich with CVSS from NVD
     for vuln in vulns:
         cve_id = vuln.get("id")  # e.g., CVE-2023-...
@@ -130,8 +139,8 @@ def get_vulnerabilities(package: str, version: str, force_refresh: bool = False)
     # Cache
     with get_db_connection() as conn:
         conn.execute(
-            "INSERT OR REPLACE INTO cache (package, version, vuln_data, queried_at) VALUES (?, ?, ?, ?)",
-            (package, version, json.dumps(vulns), datetime.now().isoformat()),
+            "INSERT OR REPLACE INTO cache (package, version, ecosystem, vuln_data, queried_at) VALUES (?, ?, ?, ?, ?)",
+            (package, version, ecosystem, json.dumps(vulns), datetime.now().isoformat()),
         )
         conn.commit()
 

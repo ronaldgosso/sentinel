@@ -15,6 +15,7 @@ class SCAFinding:
         cvss_score: Optional[float] = None,
         affected_versions: str = "",
         fix_versions: str = "",
+        ecosystem: str = "PyPI",
     ):
         self.package = package
         self.version = version
@@ -25,7 +26,11 @@ class SCAFinding:
         self.affected_versions = affected_versions
         self.fix_versions = fix_versions
         self.rule_id = "sca_vulnerability"
-        self.location = f"{package}@{version}"
+        self.ecosystem = ecosystem
+        if ecosystem != "PyPI":
+            self.location = f"[{ecosystem}] {package}@{version}"
+        else:
+            self.location = f"{package}@{version}"
         self.line = 0
         self.code_snippet = f"Package: {package}=={version}"
         self.message = f"{vuln_id}: {summary}"
@@ -63,17 +68,17 @@ class SCAScanner:
             deps = parse_dependency_file(file)
             all_deps.extend(deps)
 
-        # Deduplicate (later package wins, but we'll keep unique)
+        # Deduplicate (later package wins, but we'll keep unique keying on pkg + ecosystem)
         unique_deps = {}
-        for pkg, ver in all_deps:
+        for pkg, ver, ecosystem in all_deps:
             if pkg:
-                unique_deps[pkg] = ver  # last seen version
+                unique_deps[(pkg, ecosystem)] = ver
 
         findings = []
-        for pkg, ver in unique_deps.items():
+        for (pkg, ecosystem), ver in unique_deps.items():
             if not ver:
                 continue  # skip if no version pinned
-            vulns = get_vulnerabilities(pkg, ver)
+            vulns = get_vulnerabilities(pkg, ver, ecosystem)
             for vuln in vulns:
                 # Determine severity
                 # Check if we have CVSS severity from NVD, else map from OSV's database_specific severity
@@ -130,6 +135,7 @@ class SCAScanner:
                     cvss_score=vuln.get("cvss_score"),
                     affected_versions=affected,
                     fix_versions=fixed,
+                    ecosystem=ecosystem,
                 )
                 findings.append(finding)
 
