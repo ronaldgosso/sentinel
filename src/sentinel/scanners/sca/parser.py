@@ -2,10 +2,12 @@ import re
 from pathlib import Path
 from typing import List, Tuple, Any
 
-try:
-    import tomli as tomllib  # for Python < 3.11
-except ImportError:
-    import tomllib  # Python 3.11+
+import sys
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 
 def parse_requirements_txt(content: str) -> List[Tuple[Any, Any]]:
