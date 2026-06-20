@@ -4,7 +4,6 @@
 
 [![PyPI version](https://badge.fury.io/py/sentinel-scanner.svg)](https://badge.fury.io/py/sentinel-scanner)
 [![GitHub Actions](https://github.com/ronaldgosso/sentinel/workflows/CI/badge.svg)](https://github.com/ronaldgosso/sentinel/actions)
-[![Docker Pulls](https://img.shields.io/docker/pulls/ronaldgosso/sentinel)](https://hub.docker.com/r/ronaldgosso/sentinel)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Sentinel** is a developer-first CLI tool that finds security vulnerabilities in Python projects and provides AI-powered fixes - all in an interactive terminal dashboard.
