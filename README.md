@@ -1,7 +1,7 @@
 # Sentinel - AI-Powered Security Hardening
 
 <p align="center">
-  <img src="assets/logo.png" alt="Sentinel Logo" style="max-width: 100%; height: auto; margin-bottom: 20px;">
+  <img width="300" height="300" alt="Sentinel Logo" src="https://github.com/user-attachments/assets/f9afe362-bb21-41df-a3f0-23325c8316fd" />
 </p>
 
 [![PyPI version](https://badge.fury.io/py/sentinel-scanner.svg)](https://badge.fury.io/py/sentinel-scanner)
