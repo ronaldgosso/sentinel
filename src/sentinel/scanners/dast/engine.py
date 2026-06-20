@@ -37,6 +37,7 @@ class DASTScanner:
         self.target_url = target_url.rstrip("/")
         self.max_pages = max_pages
         self.findings: List[DASTFinding] = []
+        self.client = HTTPClient(self.target_url)
 
     def scan(self) -> List[DASTFinding]:
         """Run the DAST scan: crawl + test endpoints."""
@@ -53,6 +54,7 @@ class DASTScanner:
             self._test_xss(url)
             self._check_security_headers(url)
 
+        self.client.close()
         return self.findings
 
     def _test_sql_injection(self, url: str) -> None:
@@ -74,10 +76,8 @@ class DASTScanner:
                 new_url = urlunparse(parsed._replace(query=new_query))
 
                 # Send request
-                client = HTTPClient(self.target_url)
-                resp = client.get(new_url)
+                resp = self.client.get(new_url)
                 if not resp:
-                    client.close()
                     continue
 
                 # Check for error-based SQLi (database error messages)
@@ -91,11 +91,9 @@ class DASTScanner:
                             cwe="CWE-89",
                         )
                         self.findings.append(finding)
-                        client.close()
                         return  # stop testing this param once found
 
                 # Time-based detection is harder; we skip for simplicity
-                client.close()
 
     def _check_sql_error(self, html: str) -> bool:
         """Heuristic to detect SQL error messages in response."""
@@ -134,10 +132,8 @@ class DASTScanner:
                 new_query = urlencode(new_params, doseq=True)
                 new_url = urlunparse(parsed._replace(query=new_query))
 
-                client = HTTPClient(self.target_url)
-                resp = client.get(new_url)
+                resp = self.client.get(new_url)
                 if not resp:
-                    client.close()
                     continue
 
                 # Check if payload is reflected in the response
@@ -153,9 +149,7 @@ class DASTScanner:
                             cwe="CWE-79",
                         )
                         self.findings.append(finding)
-                        client.close()
                         return  # stop testing this param
-                client.close()
 
     def _is_escaped(self, payload: str, text: str) -> bool:
         """Check if the payload is HTML-escaped in the response."""
@@ -165,10 +159,8 @@ class DASTScanner:
 
     def _check_security_headers(self, url: str) -> None:
         """Check for missing security headers."""
-        client = HTTPClient(self.target_url)
-        resp = client.get(url)
+        resp = self.client.get(url)
         if not resp:
-            client.close()
             return
 
         headers = resp.headers
@@ -191,4 +183,3 @@ class DASTScanner:
                 cwe="CWE-693",
             )
             self.findings.append(finding)
-        client.close()
