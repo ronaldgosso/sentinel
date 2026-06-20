@@ -2,7 +2,7 @@
 
 ![Sentinel Logo](assets/logo.png)
 
-[![PyPI version](https://badge.fury.io/py/sentinel-security.svg)](https://badge.fury.io/py/sentinel-security)
+[![PyPI version](https://badge.fury.io/py/sentinel-scanner.svg)](https://badge.fury.io/py/sentinel-scanner)
 [![GitHub Actions](https://github.com/ronaldgosso/sentinel/workflows/CI/badge.svg)](https://github.com/ronaldgosso/sentinel/actions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/ronaldgosso/sentinel)](https://hub.docker.com/r/ronaldgosso/sentinel)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -23,7 +23,7 @@
 
 ```bash
 # Install
-pip install sentinel-security
+pip install sentinel-scanner
 
 # Scan
 sentinel scan .
@@ -37,7 +37,7 @@ For full documentation, visit [Sentinel Docs](https://ronaldgosso.github.io/sent
 
 ## Distribution
 
-- PyPI: `pip install sentinel-security`
+- PyPI: `pip install sentinel-scanner`
 - Docker: `docker run ghcr.io/ronaldgosso/sentinel:latest scan .`
 - GitHub Action: `uses: ronaldgosso/sentinel-action@v1`
 
