@@ -39,7 +39,7 @@ def detect_hardcoded_secrets(tree: ast.AST, source: str, filename: str) -> List[
                     "line": line_no,
                     "code": redacted,
                     "message": f"Hardcoded secret: {msg}",
-                    "fix": "Move secret to environment variable or vault. Use os.getenv('SECRET_NAME')",
+                    "fix": "Protocol: Externalized Configuration. Remove plain-text credentials, API keys, and tokens from the source code. Save them to a local '.env' file (which must be added to your '.gitignore') and load them dynamically using python-dotenv. Access them via environment variables: os.getenv('VARIABLE_NAME').",
                 }
             )
 

@@ -30,7 +30,7 @@ def detect_insecure_crypto(tree: ast.AST, source: str, filename: str) -> List[Di
                     "line": line_no,
                     "code": context.strip(),
                     "message": f"Insecure cryptography: {msg}",
-                    "fix": "Use SHA-256, SHA-3, or bcrypt. For encryption, use AES-GCM or ChaCha20.",
+                    "fix": "Protocol: Strong Cryptographic Standards. Replace weak, collision-prone hash algorithms (MD5, SHA-1, SHA-0) with secure hashes (SHA-256, SHA-3, or bcrypt for passwords). For symmetric encryption, replace insecure ciphers (DES, RC4) with AES-GCM (e.g., using python's cryptography package) or ChaCha20-Poly1305.",
                 }
             )
 

@@ -31,7 +31,7 @@ def detect_xss(tree: ast.AST, source: str, filename: str) -> List[Dict[str, Any]
                     "line": line_no,
                     "code": context.strip(),
                     "message": f"Potential XSS: {msg}",
-                    "fix": "Ensure output is properly escaped. Use |escape filter. Avoid mark_safe on untrusted input.",
+                    "fix": "Protocol: Output Encoding & Context-Aware Escaping. Remove raw rendering filters like '|safe' or 'mark_safe()' for user-controlled inputs. Always HTML-escape variables using template engine auto-escaping (e.g. Jinja/Django default) or escape values explicitly using python's 'html.escape()' module.",
                 }
             )
 

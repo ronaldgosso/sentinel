@@ -34,7 +34,7 @@ def detect_command_injection(tree: ast.AST, source: str, filename: str) -> List[
                     "line": line_no,
                     "code": context.strip(),
                     "message": f"Command Injection: {msg}",
-                    "fix": "Avoid shell=True. Pass command as list: subprocess.run(['ls', '-la'])",
+                    "fix": "Protocol: Argument Separation. Set 'shell=False' in subprocess execution calls (such as subprocess.run, call, Popen). Pass commands and arguments as a list of strings rather than a single interpolated command string. Example: Change subprocess.run(f'ping -c 1 {ip}', shell=True) to subprocess.run(['ping', '-c', '1', ip], shell=False).",
                 }
             )
 

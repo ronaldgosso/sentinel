@@ -33,7 +33,7 @@ def detect_sql_injection(tree: ast.AST, source: str, filename: str) -> List[Dict
                     "line": line_no,
                     "code": context.strip(),
                     "message": f"Potential SQL Injection: {msg}",
-                    "fix": "Use parameterised queries (cursor.execute('SELECT * FROM users WHERE id=?', (user_id,)))",
+                    "fix": "Protocol: Parameterized Queries. Replace string concatenation or formatting inside SQL executions with placeholders and pass query parameters as a tuple. Example: Change cursor.execute(f'SELECT * FROM users WHERE username = \"{user}\"') to cursor.execute('SELECT * FROM users WHERE username = ?', (user,)).",
                 }
             )
 

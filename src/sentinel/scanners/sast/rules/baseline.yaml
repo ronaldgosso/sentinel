@@ -3,7 +3,7 @@
   cwe: "CWE-89"
   severity: Critical
   description: "SQL injection occurs when user input is concatenated into SQL queries."
-  remediation: "Use parameterised queries: cursor.execute('SELECT * FROM users WHERE id=?', (user_id,))"
+  remediation: "Protocol: Parameterized Queries. Replace string concatenation or formatting inside SQL executions with placeholders and pass query parameters as a tuple. Example: Change cursor.execute(f'SELECT * FROM users WHERE username = \"{user}\"') to cursor.execute('SELECT * FROM users WHERE username = ?', (user,))."
   pattern_type: "regex"
   pattern: "execute.*SELECT.*%|execute.*SELECT.*\\.format|execute.*f\"SELECT"
   file_patterns: ["*.py"]
@@ -13,7 +13,7 @@
   cwe: "CWE-79"
   severity: High
   description: "XSS occurs when untrusted data is rendered in HTML without escaping."
-  remediation: "Use autoescaping in templates. Avoid |safe filter on untrusted input."
+  remediation: "Protocol: Output Encoding & Context-Aware Escaping. Remove raw rendering filters like '|safe' or 'mark_safe()' for user-controlled inputs. Always HTML-escape variables using template engine auto-escaping (e.g. Jinja/Django default) or escape values explicitly using python's 'html.escape()' module."
   pattern_type: "regex"
   pattern: "{{.*?\\|safe}}|mark_safe\\("
   file_patterns: ["*.py", "*.html", "*.jinja", "*.twig"]
@@ -23,7 +23,7 @@
   cwe: "CWE-78"
   severity: Critical
   description: "OS command injection via subprocess calls with shell=True."
-  remediation: "Use subprocess.run(['ls', '-la']) and avoid shell=True."
+  remediation: "Protocol: Argument Separation. Set 'shell=False' in subprocess execution calls (such as subprocess.run, call, Popen). Pass commands and arguments as a list of strings rather than a single interpolated command string. Example: Change subprocess.run(f'ping -c 1 {ip}', shell=True) to subprocess.run(['ping', '-c', '1', ip], shell=False)."
   pattern_type: "regex"
   pattern: "subprocess\\.(call|Popen).*shell\\s*=\\s*True"
   file_patterns: ["*.py"]
@@ -33,7 +33,7 @@
   cwe: "CWE-798"
   severity: Critical
   description: "API keys, passwords, and tokens hardcoded in source code."
-  remediation: "Use environment variables: os.getenv('SECRET_KEY')"
+  remediation: "Protocol: Externalized Configuration. Remove plain-text credentials, API keys, and tokens from the source code. Save them to a local '.env' file (which must be added to your '.gitignore') and load them dynamically using python-dotenv. Access them via environment variables: os.getenv('VARIABLE_NAME')."
   pattern_type: "regex"
   pattern: "(API_KEY|SECRET|PASSWORD)\\s*=\\s*['\"][^'\"]+['\"]"
   file_patterns: ["*.py", "*.env", "*.conf"]
@@ -43,7 +43,7 @@
   cwe: "CWE-326"
   severity: High
   description: "Use of weak or broken cryptographic algorithms (MD5, SHA1, DES, RC4)."
-  remediation: "Replace with SHA-256, SHA-3, or AES-GCM."
+  remediation: "Protocol: Strong Cryptographic Standards. Replace weak, collision-prone hash algorithms (MD5, SHA-1, SHA-0) with secure hashes (SHA-256, SHA-3, or bcrypt for passwords). For symmetric encryption, replace insecure ciphers (DES, RC4) with AES-GCM (e.g., using python's cryptography package) or ChaCha20-Poly1305."
   pattern_type: "regex"
   pattern: "hashlib\\.(md5|sha1)|DES\\.new|ARC4"
   file_patterns: ["*.py"]
