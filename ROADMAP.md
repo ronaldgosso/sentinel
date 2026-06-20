@@ -1,14 +1,14 @@
 # Roadmap
 
-## v1.1 (Q2 2025)
+## v1.1 (Q3 2026)
 - Better DAST (time-based SQLi, CSRF, more payloads)
-- Support for `npm` and `go.mod` in SCA
+- [x] Support for `npm` and `go.mod` in SCA (Completed)
 - Improved AI prompt with few-shot examples
 
-## v1.2 (Q3 2025)
+## v1.2 (Q4 2026)
 - VS Code extension for inline vulnerability highlighting
 - Web dashboard for historical scans
 
-## v2.0 (2026)
+## v2.0 (2027)
 - SAST for JavaScript/TypeScript and Go
 - Machine learning for false-positive reduction
