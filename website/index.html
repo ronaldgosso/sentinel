@@ -13,6 +13,7 @@
     <header class="navbar">
         <div class="logo">Sentinel</div>
         <nav>
+            <a href="#playground">Interactive Demo</a>
             <a href="#features">Features</a>
             <a href="#how-it-works">How It Works</a>
             <a href="https://github.com/ronaldgosso/sentinel" class="nav-btn">GitHub</a>
@@ -22,13 +23,13 @@
     <section class="hero">
         <div class="hero-content">
             <h1>AI-Powered Security Hardening for <span class="highlight">Python Developers</span></h1>
-            <p>Stop shipping vulnerabilities to production. Sentinel catches critical flaws before you merge, with intelligent AI-driven auto-fixes.</p>
+            <p>Stop shipping vulnerabilities to production. Sentinel catches critical flaws before you merge, with intelligent offline protocols and AI-driven auto-fixes.</p>
             <div class="hero-ctas">
-                <a href="https://ronaldgosso.github.io/sentinel/docs/" class="btn primary">Get Started</a>
+                <a href="https://github.com/ronaldgosso/sentinel" class="btn primary">Get Started</a>
                 <a href="https://github.com/ronaldgosso/sentinel" class="btn secondary">Star on GitHub</a>
             </div>
             <div class="install-snippet">
-                <code>pip install sentinel-security</code>
+                <code>pip install sentinel-scanner</code>
                 <button id="copy-btn">Copy</button>
             </div>
         </div>
@@ -52,7 +53,52 @@
         </div>
         <div class="card solution">
             <h3>The Solution</h3>
-            <p>Sentinel runs directly in your CI or local terminal. It uses Mistral AI to filter noise, explain the actual risk, and provide one-click code remediations.</p>
+            <p>Sentinel runs directly in your CI or local terminal. It uses standard security protocols offline or Mistral AI online to explain raw risks and apply one-click auto-fixes.</p>
+        </div>
+    </section>
+
+    <section id="playground" class="playground-section">
+        <h2>Interactive Vulnerability Playground</h2>
+        <p class="subtitle">Select a vulnerability type to view how Sentinel detects it and applies safe security remediations offline.</p>
+        
+        <div class="playground-container">
+            <div class="playground-sidebar">
+                <button class="pg-tab active" data-vuln="sqli">SQL Injection</button>
+                <button class="pg-tab" data-vuln="xss">Cross-Site Scripting (XSS)</button>
+                <button class="pg-tab" data-vuln="cmd">Command Injection</button>
+                <button class="pg-tab" data-vuln="secrets">Hardcoded Secrets</button>
+                <button class="pg-tab" data-vuln="crypto">Insecure Cryptography</button>
+            </div>
+            
+            <div class="playground-content">
+                <div class="vuln-info">
+                    <h3 id="vuln-title">SQL Injection (CWE-89)</h3>
+                    <p id="vuln-desc">Concatenating untrusted user inputs directly into SQL query strings.</p>
+                    <div class="remediation-box">
+                        <strong>Offline Remediation Protocol:</strong>
+                        <p id="vuln-remediation">Protocol: Parameterized Queries. Replace string concatenation or formatting inside SQL executions with placeholders and pass query parameters as a tuple. Example: Change cursor.execute(f'SELECT * FROM users WHERE username = "{user}"') to cursor.execute('SELECT * FROM users WHERE username = ?', (user,)).</p>
+                    </div>
+                </div>
+                
+                <div class="code-editor-container">
+                    <div class="editor-pane">
+                        <div class="pane-header">Vulnerable Code</div>
+                        <pre><code id="code-vuln"># Unsafe SQL Construction
+def get_user(user_id):
+    query = f"SELECT * FROM users WHERE id = {user_id}"
+    return db.execute(query)</code></pre>
+                    </div>
+                    <div class="editor-pane">
+                        <div class="pane-header">Remediated Code</div>
+                        <div class="remediated-wrapper">
+                            <pre><code id="code-fixed"># Click 'Apply Auto-Fix' to see secure code</code></pre>
+                            <div class="blur-overlay" id="blur-overlay">
+                                <button id="fix-btn" class="btn primary">Apply Auto-Fix</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -61,11 +107,11 @@
         <div class="grid">
             <div class="feature-card">
                 <h4>Static Analysis (SAST)</h4>
-                <p>Detects SQLi, XSS, hardcoded secrets, and insecure crypto using custom YAML rules.</p>
+                <p>Detects SQLi, XSS, command injection, hardcoded secrets, and insecure crypto using customizable rules.</p>
             </div>
             <div class="feature-card">
                 <h4>Dependencies (SCA)</h4>
-                <p>Audits your supply chain against OSV.dev and NVD to stop compromised packages.</p>
+                <p>Audits your supply chain against OSV.dev and NVD. Fully supports Python, Node.js (npm), and Go modules.</p>
             </div>
             <div class="feature-card">
                 <h4>Dynamic Testing (DAST)</h4>
@@ -85,7 +131,7 @@
             <div class="arrow">→</div>
             <div class="step">2. Detect Flaws</div>
             <div class="arrow">→</div>
-            <div class="step highlight-step">3. AI Enrichment</div>
+            <div class="step highlight-step">3. AI / Protocol Triage</div>
             <div class="arrow">→</div>
             <div class="step">4. Auto-Fix</div>
         </div>
@@ -93,10 +139,10 @@
 
     <section class="ci-cd">
         <h2>Built for CI/CD</h2>
-        <p>Integrate easily with our official GitHub Action.</p>
+        <p>Integrate easily with our official GitHub Actions docs deployment workflow.</p>
         <img src="https://github.com/ronaldgosso/sentinel/workflows/CI/badge.svg" alt="CI Status">
         <br><br>
-        <a href="https://ronaldgosso.github.io/sentinel/docs/ci-cd.html" class="btn outline">View CI/CD Guide</a>
+        <a href="https://github.com/ronaldgosso/sentinel" class="btn outline">View Setup Guide</a>
     </section>
 
     <footer>
