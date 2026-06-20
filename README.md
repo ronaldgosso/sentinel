@@ -1,6 +1,8 @@
 # Sentinel - AI-Powered Security Hardening
 
-<img src="assets/logo.png" alt="Sentinel Logo" style="max-width: 100%; height: auto; display: block; margin: 0 auto 20px;">
+<p align="center">
+  <img src="assets/logo.png" alt="Sentinel Logo" style="max-width: 100%; height: auto; margin-bottom: 20px;">
+</p>
 
 [![PyPI version](https://badge.fury.io/py/sentinel-scanner.svg)](https://badge.fury.io/py/sentinel-scanner)
 [![GitHub Actions](https://github.com/ronaldgosso/sentinel/workflows/CI/badge.svg)](https://github.com/ronaldgosso/sentinel/actions)
@@ -58,9 +60,9 @@ The repository uses automated GitHub Actions workflows to maintain code quality,
 | Workflow | File | Trigger | Description |
 | :--- | :--- | :--- | :--- |
 | **Continuous Integration (CI)** | [ci.yml](.github/workflows/ci.yml) | Push/PR to `main` | Runs tests, Ruff (linting), and Mypy (type checking) to ensure code meets quality standards before merge. |
-| **Publish to PyPI** | [pypi-publish.yml](.github/workflows/pypi-publish.yml) | Push tag `v*.*.*` | Runs quality checks first. If successful, builds wheels and publishes the distribution packages to PyPI via secure OIDC. |
-| **Build & Publish Docker** | [docker-build.yml](.github/workflows/docker-build.yml) | Push to `main`, tags `v*`, or PyPI success | Automates building the optimized multi-stage Python wheel Docker image and pushes tags (including `latest` and version numbers) to GHCR. |
-| **Deploy Docs** | [docs.yml](.github/workflows/docs.yml) | Push to `main` | Deploys static files from the `website/` folder directly to GitHub Pages at [https://ronaldgosso.github.io/sentinel](https://ronaldgosso.github.io/sentinel). |
+| **Publish to PyPI** | [pypi-publish.yml](.github/workflows/pypi-publish.yml) | Push tag `v*.*.*` | Runs quality checks first. If successful, builds wheels and publishes the distribution packages to [...]
+| **Build & Publish Docker** | [docker-build.yml](.github/workflows/docker-build.yml) | Push to `main`, tags `v*`, or PyPI success | Automates building the optimized multi-stage Python wheel Docker im[...]
+| **Deploy Docs** | [docs.yml](.github/workflows/docs.yml) | Push to `main` | Deploys static files from the `website/` folder directly to GitHub Pages at [https://ronaldgosso.github.io/sentinel](https://ronaldgosso.github.io/sentinel) [...]
 
 ---
 
