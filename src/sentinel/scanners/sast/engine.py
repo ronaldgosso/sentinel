@@ -9,6 +9,7 @@ from .detectors import (
     detect_command_injection,
     detect_hardcoded_secrets,
     detect_insecure_crypto,
+    detect_frontend_vulnerabilities,
 )
 
 # Mapping of detector functions
@@ -18,6 +19,7 @@ DETECTOR_MAP = {
     "command_injection": detect_command_injection,
     "hardcoded_secrets": detect_hardcoded_secrets,
     "insecure_crypto": detect_insecure_crypto,
+    "frontend_vuln": detect_frontend_vulnerabilities,
 }
 
 
@@ -71,11 +73,13 @@ class SASTScanner:
         except Exception:
             return []  # skip unreadable files
 
-        # Parse AST
-        try:
-            tree = ast.parse(source, filename=str(filepath))
-        except SyntaxError:
-            return []  # skip files with syntax errors
+        # Parse AST only for Python files
+        tree = None
+        if filepath.suffix == ".py":
+            try:
+                tree = ast.parse(source, filename=str(filepath))
+            except SyntaxError:
+                return []  # skip files with syntax errors
 
         findings = []
 
@@ -114,11 +118,11 @@ class SASTScanner:
         return None
 
     def scan_directory(self, root_path: str) -> List[Finding]:
-        """Scan all Python files in a directory."""
-        from ...utils.file_walker import walk_python_files
+        """Scan all source files in a directory."""
+        from ...utils.file_walker import walk_source_files
 
         all_findings = []
-        files = walk_python_files(root_path)
+        files = walk_source_files(root_path)
 
         for filepath in files:
             all_findings.extend(self.scan_file(filepath))
