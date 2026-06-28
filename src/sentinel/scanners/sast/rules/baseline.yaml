@@ -47,3 +47,13 @@
   pattern_type: "regex"
   pattern: "hashlib\\.(md5|sha1)|DES\\.new|ARC4"
   file_patterns: ["*.py"]
+
+- id: frontend_vuln
+  name: "Frontend/HTML Vulnerability"
+  cwe: "CWE-79"
+  severity: High
+  description: "Frontend-specific security risk such as unsafe HTML rendering, reverse tabnabbing, un-sandboxed iframe, or inline scripts/events."
+  remediation: "Protocol: Secure Frontend Practices. Avoid rendering raw HTML (e.g., dangerouslySetInnerHTML, v-html). If necessary, sanitize input using DOMPurify. Avoid 'eval' or string-based timeouts. Use rel='noopener noreferrer' when using target='_blank'. Use sandboxed iframes. Do not use javascript: URIs or inline scripts and event handlers."
+  pattern_type: "regex"
+  pattern: "dangerouslySetInnerHTML|v-html|ng-bind-html|bypassSecurityTrustHtml|target\\s*=\\s*[\"']_blank[\"'](?!.*rel\\s*=\\s*[\"'].*noopener.*[\"'])|href\\s*=\\s*[\"']javascript:|eval\\s*\\(|setTimeout\\s*\\(\\s*['\"`].*?['\"`].*?,|setInterval\\s*\\(\\s*['\"`].*?['\"`].*?,|\\.innerHTML\\s*=|\\.outerHTML\\s*=|document\\.write\\s*\\(|document\\.writeln\\s*\\(|<script(?!.*?src=)(?!.*?nonce=).*?>|<iframe(?!.*?sandbox=).*?>|\\son\\w+\\s*=\\s*[\"']"
+  file_patterns: ["*.html", "*.js", "*.jsx", "*.ts", "*.tsx"]
