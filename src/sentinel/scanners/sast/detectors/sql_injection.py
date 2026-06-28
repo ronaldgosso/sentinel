@@ -1,9 +1,9 @@
 import ast
 import re
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 
-def detect_sql_injection(tree: ast.AST, source: str, filename: str) -> List[Dict[str, Any]]:
+def detect_sql_injection(tree: Optional[ast.AST], source: str, filename: str) -> List[Dict[str, Any]]:
     """Detect SQL injection vulnerabilities (string formatting in SQL queries)."""
     findings = []
 
