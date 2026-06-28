@@ -89,8 +89,23 @@ def hash_password(password):
     return hashlib.md5(password.encode()).hexdigest()`,
         fixedCode: `# Secure Cryptographic Standard
 import hashlib
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()`
+def hash_password(pwd: str):
+    return hashlib.sha256(pwd.encode()).hexdigest()`
+    },
+    frontend: {
+        title: "Frontend Security Risks (CWE-79 & CWE-1022)",
+        desc: "Unsafe React/JSX HTML rendering (dangerouslySetInnerHTML) and lack of sandboxing on iframes.",
+        remediation: "Protocol: Secure Frontend Practices. Avoid rendering raw HTML (e.g., dangerouslySetInnerHTML, v-html). If necessary, sanitize input using DOMPurify. Avoid 'eval' or string-based timeouts. Use rel='noopener noreferrer' when using target='_blank'. Use sandboxed iframes. Do not use javascript: URIs or inline scripts and event handlers.",
+        vulnCode: `<!-- Unsafe dangerouslySetInnerHTML and Un-sandboxed iframe -->
+<div dangerouslySetInnerHTML={{ __html: userInput }} />
+
+<iframe src="https://example.com/embed"></iframe>`,
+        fixedCode: `<!-- Safe Sanitized HTML rendering and Sandboxed iframe -->
+import DOMPurify from 'dompurify';
+const cleanHtml = DOMPurify.sanitize(userInput);
+<div dangerouslySetInnerHTML={{ __html: cleanHtml }} />
+
+<iframe sandbox="allow-scripts" src="https://example.com/embed"></iframe>`
     }
 };
 
