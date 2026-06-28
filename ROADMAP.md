@@ -10,5 +10,6 @@
 - Web dashboard for historical scans
 
 ## v2.0 (2027)
-- SAST for JavaScript/TypeScript and Go
+- [x] SAST for JavaScript/TypeScript (Completed)
+- SAST for Go
 - Machine learning for false-positive reduction

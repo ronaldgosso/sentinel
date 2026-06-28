@@ -1,6 +1,6 @@
 # Contributing to Sentinel
 
-We love contributions! Here\'s how you can help.
+We love contributions! Here's how you can help.
 
 ## Reporting Issues
 
@@ -15,7 +15,7 @@ We love contributions! Here\'s how you can help.
 ## Adding a New Detector
 
 1. Create a new Python file in `src/sentinel/scanners/sast/detectors/`.
-2. Implement a function that takes `(ast.AST, source, filename)` and returns a list of dicts.
+2. Implement a function that takes `(Optional[ast.AST], source, filename)` and returns a list of dicts.
 3. Add your function to `DETECTOR_MAP` in `src/sentinel/scanners/sast/engine.py`.
 4. Add a corresponding YAML rule in `rules/`.
 

@@ -1,6 +1,6 @@
 # Sentinel Docker Image
 
-The Sentinel Docker image provides a portable and isolated environment to run security scans on your Python projects without installing dependencies on your host machine.
+The Sentinel Docker image provides a portable and isolated environment to run security scans on your projects (supporting Python, JavaScript/TypeScript, HTML, CSS, and dependencies) without installing dependencies on your host machine.
 
 ## Usage
 
