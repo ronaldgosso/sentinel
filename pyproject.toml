@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sentinel-scanner"
 version = "1.0.9"
-description = "AI-powered security hardening for Python developers"
+description = "AI-powered security hardening for Python & frontend developers"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "GPL-3.0"}
