@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import List, Optional
 
 
-def walk_python_files(root_path: str, ignore_patterns: Optional[List[str]] = None) -> List[Path]:
-    """Walk directory and return all .py files, respecting .sentinelignore."""
+def walk_source_files(root_path: str, ignore_patterns: Optional[List[str]] = None) -> List[Path]:
+    """Walk directory and return all source files, respecting .sentinelignore."""
     ignore_patterns = ignore_patterns or [
         ".venv",
         "venv",
@@ -16,14 +16,17 @@ def walk_python_files(root_path: str, ignore_patterns: Optional[List[str]] = Non
         "tests",
         "test_*",
     ]
-    python_files = []
+    source_files = []
     root = Path(root_path).resolve()
+    
+    # Supported file extensions for SAST scanning
+    extensions = (".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css")
 
     for dirpath, dirnames, filenames in os.walk(root):
         # Skip ignored directories
         dirnames[:] = [d for d in dirnames if d not in ignore_patterns and not d.startswith(".")]
         for fname in filenames:
-            if fname.endswith(".py") and not fname.startswith("test_"):
+            if fname.endswith(extensions) and not fname.startswith("test_"):
                 full_path = Path(dirpath) / fname
-                python_files.append(full_path)
-    return python_files
+                source_files.append(full_path)
+    return source_files
