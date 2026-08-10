@@ -1,10 +1,11 @@
 from pathlib import Path
-from sentinel.scanners.sast.engine import SASTScanner
+
 from sentinel.scanners.sast.detectors import (
-    detect_sql_injection,
-    detect_hardcoded_secrets,
     detect_frontend_vulnerabilities,
+    detect_hardcoded_secrets,
+    detect_sql_injection,
 )
+from sentinel.scanners.sast.engine import SASTScanner
 
 
 def test_sql_injection_detector() -> None:
@@ -50,7 +51,7 @@ def foo():
 
 def test_frontend_vulnerabilities_detector() -> None:
     # Test React dangerouslySetInnerHTML
-    react_code = '<div dangerouslySetInnerHTML={{ __html: clean }} />'
+    react_code = "<div dangerouslySetInnerHTML={{ __html: clean }} />"
     findings_react = detect_frontend_vulnerabilities(None, react_code, "test.jsx")
     assert len(findings_react) == 1
     assert "dangerouslySetInnerHTML" in findings_react[0]["message"]
@@ -62,7 +63,7 @@ def test_frontend_vulnerabilities_detector() -> None:
     assert "noopener noreferrer" in findings_html[0]["message"]
 
     # Test inline script without CSP
-    inline_script = '<script>alert(1);</script>'
+    inline_script = "<script>alert(1);</script>"
     findings_script = detect_frontend_vulnerabilities(None, inline_script, "test.html")
     assert len(findings_script) == 1
     assert "Inline <script>" in findings_script[0]["message"]

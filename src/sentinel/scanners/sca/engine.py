@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any
+
 from .parser import find_dependency_files, parse_dependency_file
 from .vuln_db import get_vulnerabilities, init_db
 
@@ -12,7 +13,7 @@ class SCAFinding:
         vuln_id: str,
         summary: str,
         severity: str,
-        cvss_score: Optional[float] = None,
+        cvss_score: float | None = None,
         affected_versions: str = "",
         fix_versions: str = "",
         ecosystem: str = "PyPI",
@@ -42,7 +43,7 @@ class SCAFinding:
         self.cwe = "N/A"
         self.ai_confirmed = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.rule_id,
             "severity": self.severity,
@@ -60,7 +61,7 @@ class SCAScanner:
     def __init__(self) -> None:
         init_db()
 
-    def scan_directory(self, root_path: str) -> List[SCAFinding]:
+    def scan_directory(self, root_path: str) -> list[SCAFinding]:
         root = Path(root_path).resolve()
         dep_files = find_dependency_files(root)
         all_deps = []

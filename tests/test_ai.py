@@ -1,4 +1,5 @@
 import pytest
+
 from sentinel.ai.enricher import AIEnricher, get_finding_hash
 
 

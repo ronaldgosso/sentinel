@@ -1,9 +1,11 @@
 import ast
 import re
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 
-def detect_hardcoded_secrets(tree: Optional[ast.AST], source: str, filename: str) -> List[Dict[str, Any]]:
+def detect_hardcoded_secrets(
+    tree: ast.AST | None, source: str, filename: str
+) -> list[dict[str, Any]]:
     """Detect hardcoded secrets (API keys, tokens, passwords)."""
     findings = []
 

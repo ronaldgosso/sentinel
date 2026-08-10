@@ -1,9 +1,9 @@
-from contextlib import AbstractContextManager, closing
-from datetime import datetime, timedelta, timezone
 import hashlib
 import json
-from pathlib import Path
 import sqlite3
+from contextlib import AbstractContextManager, closing
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any
 
 from rich.console import Console
@@ -143,7 +143,9 @@ class AIEnricher:
             ).fetchone()
             if row:
                 analyzed_at = datetime.fromisoformat(row["analyzed_at"])
-                if datetime.now(timezone.utc).replace(tzinfo=None) - analyzed_at < timedelta(days=7):
+                if datetime.now(timezone.utc).replace(tzinfo=None) - analyzed_at < timedelta(
+                    days=7
+                ):
                     res: dict[str, Any] = json.loads(row["analysis"])
                     return res
         return None
@@ -153,6 +155,10 @@ class AIEnricher:
         with get_cache_connection() as conn:
             conn.execute(
                 "INSERT OR REPLACE INTO ai_cache (finding_hash, analysis, analyzed_at) VALUES (?, ?, ?)",
-                (f_hash, json.dumps(analysis), datetime.now(timezone.utc).replace(tzinfo=None).isoformat()),
+                (
+                    f_hash,
+                    json.dumps(analysis),
+                    datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
+                ),
             )
             conn.commit()

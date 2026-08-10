@@ -1,10 +1,14 @@
-import sqlite3
 import json
+import logging
+import sqlite3
 from contextlib import AbstractContextManager, closing
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
-from datetime import datetime, timedelta, timezone
+
 import httpx
+
+logger = logging.getLogger(__name__)
 
 DB_PATH = Path.home() / ".sentinel" / "vuln_cache.db"
 
@@ -62,9 +66,7 @@ def query_osv(package: str, version: str, ecosystem: str = "PyPI") -> Any:
             else:
                 return []
     except (httpx.HTTPError, TimeoutError) as e:
-        import logging
-
-        logging.warning(f"Failed to query OSV for {package}: {e}")
+        logger.warning(f"Failed to query OSV for {package}: {e}")
         return []
 
 
@@ -104,10 +106,8 @@ def get_cvss_from_nvd(cve_id: str) -> dict[str, Any] | None:
                             conn.commit()
                         return {"score": score, "severity": severity}
     except (httpx.HTTPError, TimeoutError) as e:
-        import logging
-
-        logging.warning(f"Failed to fetch CVSS from NVD for {cve_id}: {e}")
-        return None
+        logger.warning(f"Failed to fetch CVSS from NVD for {cve_id}: {e}")
+    return None
 
 
 def get_vulnerabilities(

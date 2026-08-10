@@ -1,8 +1,7 @@
 import re
-from pathlib import Path
-from typing import List, Tuple, Any
-
 import sys
+from pathlib import Path
+from typing import Any
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -10,7 +9,7 @@ else:
     import tomli as tomllib
 
 
-def parse_requirements_txt(content: str) -> List[Tuple[Any, Any, str]]:
+def parse_requirements_txt(content: str) -> list[tuple[Any, Any, str]]:
     """Parse requirements.txt, return list of (package, version, ecosystem)."""
     deps = []
     for line in content.splitlines():
@@ -18,7 +17,7 @@ def parse_requirements_txt(content: str) -> List[Tuple[Any, Any, str]]:
         if not line or line.startswith("#"):
             continue
         # handle -r, -e, etc. skip for now
-        if line.startswith("-") or line.startswith("#"):
+        if line.startswith(("-", "#")):
             continue
         # remove extras and hashes
         pkg = re.split(r"[;<>!=~]", line)[0].strip()
@@ -33,7 +32,7 @@ def parse_requirements_txt(content: str) -> List[Tuple[Any, Any, str]]:
     return deps
 
 
-def parse_pyproject_toml(content: str) -> List[Tuple[Any, Any, str]]:
+def parse_pyproject_toml(content: str) -> list[tuple[Any, Any, str]]:
     """Parse pyproject.toml for dependencies and dev-dependencies."""
     data = tomllib.loads(content)
     deps = []
@@ -47,7 +46,7 @@ def parse_pyproject_toml(content: str) -> List[Tuple[Any, Any, str]]:
             version = match.group(2).strip()
         deps.append((pkg, version, "PyPI"))
     # optional dependencies
-    for group, deps_list in data.get("project", {}).get("optional-dependencies", {}).items():
+    for deps_list in data.get("project", {}).get("optional-dependencies", {}).values():
         for dep in deps_list:
             pkg = re.split(r"[;<>!=~]", dep)[0].strip()
             version = None
@@ -58,7 +57,7 @@ def parse_pyproject_toml(content: str) -> List[Tuple[Any, Any, str]]:
     return deps
 
 
-def parse_poetry_lock(content: str) -> List[Tuple[Any, Any, str]]:
+def parse_poetry_lock(content: str) -> list[tuple[Any, Any, str]]:
     """Parse poetry.lock (TOML) for packages and versions."""
     data = tomllib.loads(content)
     deps = []
@@ -70,7 +69,7 @@ def parse_poetry_lock(content: str) -> List[Tuple[Any, Any, str]]:
     return deps
 
 
-def parse_uv_lock(content: str) -> List[Tuple[Any, Any, str]]:
+def parse_uv_lock(content: str) -> list[tuple[Any, Any, str]]:
     """Parse uv.lock (TOML) for packages and versions."""
     # uv.lock format similar to poetry but with different structure
     data = tomllib.loads(content)
@@ -83,7 +82,7 @@ def parse_uv_lock(content: str) -> List[Tuple[Any, Any, str]]:
     return deps
 
 
-def parse_package_json(content: str) -> List[Tuple[Any, Any, str]]:
+def parse_package_json(content: str) -> list[tuple[Any, Any, str]]:
     """Parse package.json for dependencies and devDependencies."""
     import json
 
@@ -96,7 +95,7 @@ def parse_package_json(content: str) -> List[Tuple[Any, Any, str]]:
     return deps
 
 
-def parse_package_lock_json(content: str) -> List[Tuple[Any, Any, str]]:
+def parse_package_lock_json(content: str) -> list[tuple[Any, Any, str]]:
     """Parse package-lock.json for exact installed versions."""
     import json
 
@@ -119,7 +118,7 @@ def parse_package_lock_json(content: str) -> List[Tuple[Any, Any, str]]:
     return deps
 
 
-def parse_go_mod(content: str) -> List[Tuple[Any, Any, str]]:
+def parse_go_mod(content: str) -> list[tuple[Any, Any, str]]:
     """Parse go.mod for module dependencies."""
     deps = []
     pattern = r"^\s*([^\s]+)\s+(v[0-9]+\.[0-9]+\.[0-9]+[^\s]*)"
@@ -146,7 +145,7 @@ def parse_go_mod(content: str) -> List[Tuple[Any, Any, str]]:
     return deps
 
 
-def parse_dependency_file(filepath: Path) -> List[Tuple[Any, Any, str]]:
+def parse_dependency_file(filepath: Path) -> list[tuple[Any, Any, str]]:
     """Detect file type and parse accordingly."""
     content = filepath.read_text(encoding="utf-8")
     if filepath.name == "requirements.txt":
@@ -167,7 +166,7 @@ def parse_dependency_file(filepath: Path) -> List[Tuple[Any, Any, str]]:
         return []
 
 
-def find_dependency_files(root_path: Path) -> List[Path]:
+def find_dependency_files(root_path: Path) -> list[Path]:
     """Find dependency files in the project root."""
     candidates = [
         "requirements.txt",

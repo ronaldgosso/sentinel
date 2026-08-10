@@ -1,6 +1,6 @@
-from datetime import datetime, timezone
 import html as html_module
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -153,13 +153,9 @@ def to_html(findings: list[dict[str, Any]], output_file: Path) -> None:
         sev = f.get("severity", "Medium")
         sev_class = f"sev-{sev.lower()}"
         raw_location = f.get("location", "")
-        location = (
-            Path(raw_location).name
-            if ":" not in raw_location
-            else raw_location
-        )
+        location = Path(raw_location).name if ":" not in raw_location else raw_location
         fix = html_module.escape(f.get("fix", "")).replace("\n", "<br>")
-        escaped_id = html_module.escape(f.get('id', '').replace('_', ' ').title())
+        escaped_id = html_module.escape(f.get("id", "").replace("_", " ").title())
         escaped_location = html_module.escape(str(location))
         rows += f"""
         <tr>

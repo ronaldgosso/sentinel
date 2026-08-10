@@ -1,9 +1,11 @@
 import ast
 import re
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 
-def detect_insecure_crypto(tree: Optional[ast.AST], source: str, filename: str) -> List[Dict[str, Any]]:
+def detect_insecure_crypto(
+    tree: ast.AST | None, source: str, filename: str
+) -> list[dict[str, Any]]:
     """Detect insecure cryptographic algorithms."""
     findings = []
 

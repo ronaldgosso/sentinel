@@ -1,15 +1,14 @@
-import os
 import fnmatch
+import os
 from pathlib import Path
-from typing import List, Optional
 
 
-def _matches_any_pattern(name: str, patterns: List[str]) -> bool:
+def _matches_any_pattern(name: str, patterns: list[str]) -> bool:
     """Check if name matches any of the given glob patterns."""
     return any(fnmatch.fnmatch(name, p) for p in patterns)
 
 
-def walk_source_files(root_path: str, ignore_patterns: Optional[List[str]] = None) -> List[Path]:
+def walk_source_files(root_path: str, ignore_patterns: list[str] | None = None) -> list[Path]:
     """Walk directory and return all source files, respecting .sentinelignore."""
     ignore_patterns = ignore_patterns or [
         ".venv",
@@ -24,14 +23,15 @@ def walk_source_files(root_path: str, ignore_patterns: Optional[List[str]] = Non
     ]
     source_files = []
     root = Path(root_path).resolve()
-    
+
     # Supported file extensions for SAST scanning
     extensions = (".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css")
 
     for dirpath, dirnames, filenames in os.walk(root):
         # Skip ignored directories (use fnmatch for glob patterns)
         dirnames[:] = [
-            d for d in dirnames
+            d
+            for d in dirnames
             if not _matches_any_pattern(d, ignore_patterns) and not d.startswith(".")
         ]
         for fname in filenames:

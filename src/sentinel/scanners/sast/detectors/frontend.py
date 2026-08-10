@@ -1,11 +1,11 @@
 import ast
 import re
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 
 def detect_frontend_vulnerabilities(
-    tree: Optional[ast.AST], source: str, filename: str
-) -> List[Dict[str, Any]]:
+    tree: ast.AST | None, source: str, filename: str
+) -> list[dict[str, Any]]:
     """Detect frontend and HTML specific vulnerabilities (e.g. dangerouslySetInnerHTML, reverse tabnabbing, inline script tags without src/nonce, iframe sandbox absence, or inline event handlers)."""
     findings = []
 

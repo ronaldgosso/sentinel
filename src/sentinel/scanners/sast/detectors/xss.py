@@ -1,9 +1,9 @@
 import ast
 import re
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 
-def detect_xss(tree: Optional[ast.AST], source: str, filename: str) -> List[Dict[str, Any]]:
+def detect_xss(tree: ast.AST | None, source: str, filename: str) -> list[dict[str, Any]]:
     """Detect XSS vulnerabilities (unsafe rendering in templates)."""
     findings = []
 

@@ -1,6 +1,7 @@
-import yaml
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
+
+import yaml
 
 CONFIG_PATHS = [
     Path.cwd() / "sentinel.yml",
@@ -9,7 +10,7 @@ CONFIG_PATHS = [
 ]
 
 
-def load_config() -> Dict[str, Any]:
+def load_config() -> dict[str, Any]:
     """Load configuration from sentinel.yml, with defaults."""
     config = {
         "exclude_patterns": [".venv", "venv", "env", "__pycache__", ".git", "tests"],

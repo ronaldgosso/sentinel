@@ -1,10 +1,11 @@
-import yaml
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any
+
+import yaml
 
 
 class Rule:
-    def __init__(self, data: Dict[str, Any]):
+    def __init__(self, data: dict[str, Any]):
         self.id = data["id"]
         self.name = data["name"]
         self.cwe = data.get("cwe", "N/A")
@@ -27,11 +28,11 @@ class Rule:
         return False
 
 
-def load_rules(rules_dir: Optional[str] = None) -> List[Rule]:
+def load_rules(rules_dir: str | None = None) -> list[Rule]:
     """Load all YAML rules from the rules directory."""
     if rules_dir is None:
         rules_dir = str(Path(__file__).parent / "rules")
-    rules: List[Rule] = []
+    rules: list[Rule] = []
     rules_path = Path(rules_dir)
     if not rules_path.exists():
         return rules  # empty if no rules yet

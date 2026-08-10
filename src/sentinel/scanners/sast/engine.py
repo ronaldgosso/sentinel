@@ -2,15 +2,15 @@ import ast
 from pathlib import Path
 from typing import Any
 
-from .rule_loader import Rule, load_rules
 from .detectors import (
-    detect_sql_injection,
-    detect_xss,
     detect_command_injection,
+    detect_frontend_vulnerabilities,
     detect_hardcoded_secrets,
     detect_insecure_crypto,
-    detect_frontend_vulnerabilities,
+    detect_sql_injection,
+    detect_xss,
 )
+from .rule_loader import Rule, load_rules
 
 # Mapping of detector functions
 DETECTOR_MAP = {
@@ -70,7 +70,7 @@ class SASTScanner:
         try:
             with open(filepath, "r", encoding="utf-8") as f:
                 source = f.read()
-        except (IOError, OSError):
+        except OSError:
             return []  # skip unreadable files
 
         # Parse AST only for Python files

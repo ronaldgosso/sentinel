@@ -1,14 +1,15 @@
-from unittest.mock import patch, MagicMock
+from pathlib import Path
+import tempfile
+from unittest.mock import MagicMock, patch
+
+from sentinel.scanners.sca.engine import SCAScanner
 from sentinel.scanners.sca.parser import (
-    parse_requirements_txt,
+    parse_go_mod,
     parse_package_json,
     parse_package_lock_json,
-    parse_go_mod,
+    parse_requirements_txt,
 )
 from sentinel.scanners.sca.vuln_db import get_vulnerabilities, init_db
-from sentinel.scanners.sca.engine import SCAScanner
-import tempfile
-from pathlib import Path
 
 
 def test_parser_requirements() -> None:
