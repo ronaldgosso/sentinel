@@ -18,15 +18,56 @@ const terminalLines = [
 const terminalElement = document.getElementById('terminal-typing');
 let currentLine = 0;
 
+// Add a cursor style element to document head dynamically
+const cursorStyle = document.createElement('style');
+cursorStyle.innerHTML = `
+    @keyframes terminal-blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+    .terminal-cursor {
+        display: inline-block;
+        width: 8px;
+        height: 15px;
+        background-color: var(--accent-cyan, #00f0ff);
+        margin-left: 4px;
+        vertical-align: middle;
+        animation: terminal-blink 1s infinite;
+    }
+`;
+document.head.appendChild(cursorStyle);
+
 function typeLine() {
+    // Remove previous cursor
+    const oldCursor = terminalElement.querySelector('.terminal-cursor');
+    if (oldCursor) {
+        oldCursor.remove();
+    }
+
     if (currentLine < terminalLines.length) {
         terminalElement.innerHTML += terminalLines[currentLine] + '<br>';
         currentLine++;
-        setTimeout(typeLine, Math.random() * 800 + 400);
+        
+        // If there's another line, add the cursor
+        if (currentLine < terminalLines.length) {
+            terminalElement.innerHTML += '<span class="terminal-cursor"></span>';
+        }
+        
+        let delay = Math.random() * 300 + 150;
+        // Adjust delay depending on action to feel organic
+        if (currentLine === 1 || currentLine === 7) {
+            // Typing commands / user inputs takes a bit longer
+            delay = 800;
+        } else if (currentLine === 2 || currentLine === 8) {
+            // Scanning outputs are fast
+            delay = 300;
+        }
+        
+        setTimeout(typeLine, delay);
     }
 }
 
-setTimeout(typeLine, 1000);
+setTimeout(typeLine, 800);
 
 // Interactive Playground Data
 const vulnData = {

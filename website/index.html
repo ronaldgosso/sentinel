@@ -3,30 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel - AI-Powered Security Hardening</title>
+    <title>Sentinel - AI-Powered Security Hardening (SAST, SCA, DAST)</title>
+    <meta name="description" content="Sentinel is an AI-powered interactive security scanner (SAST, SCA, DAST) for Python, JavaScript/TypeScript, HTML, and CSS developers. Audit dependencies, crawl live web apps, and apply code auto-fixes offline or with Mistral/Ollama AI.">
+    <meta name="keywords" content="security, scanner, SAST, SCA, DAST, AI, security hardening, Python security, JavaScript security, Mistral, Ollama, code fixer">
+    <meta name="author" content="Ronald Gosso">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="navbar">
         <div class="logo">Sentinel</div>
         <nav>
+            <a href="#demo-video">Video Tour</a>
             <a href="#playground">Interactive Demo</a>
             <a href="#features">Features</a>
             <a href="#how-it-works">How It Works</a>
-            <a href="https://github.com/ronaldgosso/sentinel" class="nav-btn">GitHub</a>
+            <a href="https://github.com/ronaldgosso/sentinel" class="nav-btn" id="nav-github-btn">GitHub</a>
         </nav>
     </header>
 
     <section class="hero">
         <div class="hero-content">
+            <div class="badge-container">
+                <span class="badge version-badge">v1.0.12</span>
+            </div>
             <h1>AI-Powered Security Hardening for <span class="highlight">Python & Frontend Developers</span></h1>
             <p>Stop shipping vulnerabilities to production. Sentinel catches critical flaws in Python, JS/TS, HTML, and CSS before you merge, with intelligent offline protocols and AI-driven auto-fixes.</p>
             <div class="hero-ctas">
-                <a href="https://github.com/ronaldgosso/sentinel" class="btn primary">Get Started</a>
-                <a href="https://github.com/ronaldgosso/sentinel" class="btn secondary">Star on GitHub</a>
+                <a href="https://github.com/ronaldgosso/sentinel" class="btn primary" id="hero-get-started">Get Started</a>
+                <a href="https://github.com/ronaldgosso/sentinel" class="btn secondary" id="hero-star-github">Star on GitHub</a>
             </div>
             <div class="install-snippet">
                 <code>pip install sentinel-scanner</code>
@@ -49,11 +56,67 @@
     <section class="problem-solution">
         <div class="card problem">
             <h3>The Problem</h3>
-            <p>Vulnerabilities often slip past code reviews, shipping straight to production. Traditional scanners output massive JSON logs that nobody reads, causing alert fatigue.</p>
+            <p>Vulnerabilities often slip past manual code reviews straight to production. Traditional security scanners output massive, unreadable JSON logs, causing alert fatigue and slower remediation times.</p>
         </div>
         <div class="card solution">
             <h3>The Solution</h3>
-            <p>Sentinel runs directly in your CI or local terminal. It uses standard security protocols offline or Mistral AI online to explain raw risks and apply one-click auto-fixes.</p>
+            <p>Sentinel runs directly in your local terminal or CI/CD pipelines. It utilizes standardized security protocols offline, or Mistral AI / Ollama online, to explain raw security risks and apply safe, one-click code remediations.</p>
+        </div>
+    </section>
+
+    <section id="demo-video" class="video-section">
+        <div class="section-header">
+            <h2>Sentinel in Action</h2>
+            <p class="subtitle">Watch how Sentinel conducts multi-engine security scans, enriches findings with AI, and applies auto-fixes live in the terminal.</p>
+        </div>
+        <div class="video-container">
+            <div class="window-frame">
+                <div class="window-header">
+                    <span class="window-dot red"></span>
+                    <span class="window-dot yellow"></span>
+                    <span class="window-dot green"></span>
+                    <span class="window-title">sentinel_demo_v1.0.12.mp4</span>
+                </div>
+                <div class="window-body">
+                    <video id="sentinel-video" preload="metadata" controls playsinline>
+                        <source src="sentinel.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <div class="video-highlights">
+                <h3>Scan, Triage, and Auto-Fix</h3>
+                <ul class="highlights-list">
+                    <li>
+                        <span class="highlight-icon">💻</span>
+                        <div class="highlight-text">
+                            <strong>Interactive TUI Dashboard</strong>
+                            <p>Browse vulnerability findings, review exploit paths, and apply code patches in a beautiful terminal-based UI.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="highlight-icon">⚡</span>
+                        <div class="highlight-text">
+                            <strong>Local Dependency Caching</strong>
+                            <p>Fast SCA checking against OSV.dev and NVD by keeping a local SQLite database cache (`~/.sentinel/vuln_cache.db`).</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="highlight-icon">🧠</span>
+                        <div class="highlight-text">
+                            <strong>Dual AI Engine (Cloud / Local)</strong>
+                            <p>Connect to Mistral AI in the cloud or integrate a local Ollama instance for secure, offline AI triage.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="highlight-icon">🕵️</span>
+                        <div class="highlight-text">
+                            <strong>Multi-Language SAST & DAST</strong>
+                            <p>Deep scan structures in Python, JS/TS, HTML, and CSS. Audit live endpoints dynamically for injections and misconfigured security headers.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </section>
 
@@ -104,23 +167,38 @@ def get_user(user_id):
     </section>
 
     <section id="features" class="features">
-        <h2>Features</h2>
+        <h2>Built-in Capabilities</h2>
+        <p class="subtitle">Sentinel combines multiple scanner paradigms and AI to automate application hardening.</p>
         <div class="grid">
             <div class="feature-card">
+                <div class="card-icon">🔍</div>
                 <h4>Static Analysis (SAST)</h4>
-                <p>Detects SQLi, XSS, command injection, hardcoded secrets, insecure crypto, and frontend/HTML vulnerabilities using customizable rules.</p>
+                <p>Analyzes AST structures to catch SQLi, XSS, commands, secrets, and weak cryptosystems in Python, JavaScript, and TypeScript.</p>
             </div>
             <div class="feature-card">
-                <h4>Dependencies (SCA)</h4>
-                <p>Audits your supply chain against OSV.dev and NVD. Fully supports Python, Node.js (npm), and Go modules.</p>
+                <div class="card-icon">📦</div>
+                <h4>Dependency Audit (SCA)</h4>
+                <p>Audits dependencies in `requirements.txt`, `package.json`, and `go.mod` against OSV/NVD with local SQLite speed caching.</p>
             </div>
             <div class="feature-card">
-                <h4>Dynamic Testing (DAST)</h4>
-                <p>Tests running web apps on the fly for injection points and misconfigured headers.</p>
+                <div class="card-icon">🕸️</div>
+                <h4>Dynamic Analysis (DAST)</h4>
+                <p>Crawls live web apps to test routes for parameter injection vulnerabilities and missing headers (CSP, HSTS, X-Frame-Options).</p>
             </div>
             <div class="feature-card highlight-card">
-                <h4>AI Triage & Auto-fix</h4>
-                <p>Mistral AI analyzes findings, explains attack vectors, and safely applies patches to your codebase.</p>
+                <div class="card-icon">🤖</div>
+                <h4>AI Auto-Fix Engine</h4>
+                <p>Connects to Mistral Cloud or a local Ollama server to write secure code patches. Maps issues to remediation standards offline.</p>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon">⚙️</div>
+                <h4>Advanced CLI Subcommands</h4>
+                <p>Initialize scanning config with `sentinel init`, manage cached vulnerabilities with `sentinel update-db`, or refine scans via command arguments.</p>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon">🚀</div>
+                <h4>CI/CD Pipeline Ready</h4>
+                <p>Fail pipeline builds via severity rules (`--fail-on`), auto-apply security fixes, and output report logs in JSON, SARIF, or HTML format.</p>
             </div>
         </div>
     </section>
@@ -128,26 +206,42 @@ def get_user(user_id):
     <section id="how-it-works" class="how-it-works">
         <h2>How It Works</h2>
         <div class="diagram">
-            <div class="step">1. Scan Project</div>
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">Scan Directory</div>
+            </div>
             <div class="arrow">→</div>
-            <div class="step">2. Detect Flaws</div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">Local AST & SCA Cache Checks</div>
+            </div>
             <div class="arrow">→</div>
-            <div class="step highlight-step">3. AI / Protocol Triage</div>
+            <div class="step highlight-step">
+                <div class="step-num">3</div>
+                <div class="step-content">AI Triage (Mistral/Ollama)</div>
+            </div>
             <div class="arrow">→</div>
-            <div class="step">4. Auto-Fix</div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">Interactive TUI Auto-Fix</div>
+            </div>
         </div>
     </section>
 
     <section class="ci-cd">
-        <h2>Built for CI/CD</h2>
-        <p>Integrate easily with our official GitHub Actions docs deployment workflow.</p>
-        <img src="https://github.com/ronaldgosso/sentinel/workflows/CI/badge.svg" alt="CI Status">
+        <h2>Seamless CI/CD Integration</h2>
+        <p>Integrate Sentinel into your dev flow using PyPI, Docker containers, or our official GitHub Action.</p>
+        <div class="badges-row">
+            <img src="https://github.com/ronaldgosso/sentinel/workflows/CI/badge.svg" alt="CI Status">
+            <img src="https://img.shields.io/badge/Docker-ghcr.io-blue?logo=docker" alt="Docker Badge">
+            <img src="https://badge.fury.io/py/sentinel-scanner.svg" alt="PyPI Badge">
+        </div>
         <br><br>
-        <a href="https://github.com/ronaldgosso/sentinel" class="btn outline">View Setup Guide</a>
+        <a href="https://github.com/ronaldgosso/sentinel" class="btn outline" id="ci-setup-guide">View Integration Guide</a>
     </section>
 
     <footer>
-        <p>Open Source &bull; GPLv3 License &bull; <a href="https://github.com/ronaldgosso/sentinel">GitHub</a></p>
+        <p>&copy; 2026 Sentinel Project &bull; Open Source under GPLv3 License &bull; <a href="https://github.com/ronaldgosso/sentinel" id="footer-github-link">GitHub Repository</a></p>
     </footer>
 
     <script src="script.js"></script>
