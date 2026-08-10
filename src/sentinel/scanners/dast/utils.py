@@ -1,7 +1,8 @@
-import httpx
-from urllib.parse import urljoin
 import time
-from typing import Optional, Dict, Any
+from typing import Any
+from urllib.parse import urljoin
+
+import httpx
 
 # Default headers to mimic a real browser
 DEFAULT_HEADERS = {
@@ -20,7 +21,7 @@ class HTTPClient:
         self.delay = delay
         self.session = httpx.Client(timeout=timeout, headers=DEFAULT_HEADERS, follow_redirects=True)
 
-    def get(self, path: str, params: Optional[Dict[str, Any]] = None) -> Optional[httpx.Response]:
+    def get(self, path: str, params: dict[str, Any] | None = None) -> httpx.Response | None:
         """GET request with rate limiting."""
         time.sleep(self.delay)  # be polite
         if path.startswith(("http://", "https://")):
@@ -30,10 +31,10 @@ class HTTPClient:
         try:
             resp = self.session.get(url, params=params)
             return resp
-        except Exception:
+        except Exception:  # noqa: BLE001
             return None
 
-    def post(self, path: str, data: Optional[Dict[str, Any]] = None) -> Optional[httpx.Response]:
+    def post(self, path: str, data: dict[str, Any] | None = None) -> httpx.Response | None:
         """POST request with rate limiting."""
         time.sleep(self.delay)
         if path.startswith(("http://", "https://")):
@@ -43,7 +44,7 @@ class HTTPClient:
         try:
             resp = self.session.post(url, data=data)
             return resp
-        except Exception:
+        except Exception:  # noqa: BLE001
             return None
 
     def close(self) -> None:

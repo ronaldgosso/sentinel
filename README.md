@@ -110,6 +110,3 @@ Give a star if this project helped you!
 ## Community & Socials
 
 Spread the word and share your journey with **Sentinel** using these engaging hashtags across GitHub, Twitter/X, and LinkedIn:
-
-* **Global Tech & AppSec**: `#Cybersecurity` `#AppSec` `#DevSecOps` `#PythonSecurity` `#AISecurity` `#OpenSource` `#StaticAnalysis`
-* **Tanzania & Africa Tech**: `#TanzaniaTech` `#SiliconDar` `#TechInTanzania` `#TanzaniaDevelopers` `#CodingInTanzania` `#AfricaTech`

@@ -1,6 +1,7 @@
 import click
 from rich.console import Console
-from ...scanners.sca.vuln_db import get_vulnerabilities, init_db, get_db_connection
+
+from ...scanners.sca.vuln_db import get_db_connection, get_vulnerabilities, init_db
 
 console = Console()
 

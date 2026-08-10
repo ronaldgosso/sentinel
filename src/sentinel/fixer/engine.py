@@ -1,7 +1,7 @@
 import re
-from pathlib import Path
-from typing import Dict, Any
 import shutil
+from pathlib import Path
+from typing import Any
 
 
 def backup_file(filepath: Path) -> Path:
@@ -11,7 +11,7 @@ def backup_file(filepath: Path) -> Path:
     return backup
 
 
-def apply_fix(finding: Dict[str, Any], dry_run: bool = False) -> bool:
+def apply_fix(finding: dict[str, Any], dry_run: bool = False) -> bool:
     """Apply fix for a single finding. Returns True if successful."""
     location = finding.get("location", "")
     if not location:

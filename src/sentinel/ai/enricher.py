@@ -1,20 +1,22 @@
-import json
+from contextlib import AbstractContextManager, closing
+from datetime import datetime, timedelta, timezone
 import hashlib
-import sqlite3
-from contextlib import closing
+import json
 from pathlib import Path
-from typing import List, Dict, Any, Optional, ContextManager
-from datetime import datetime, timedelta
+import sqlite3
+from typing import Any
+
+from rich.console import Console
+
 from .client import AIClient
 from .prompts import FINDING_ANALYSIS_PROMPT
-from rich.console import Console
 
 console = Console()
 
 CACHE_DB = Path.home() / ".sentinel" / "ai_cache.db"
 
 
-def get_cache_connection() -> ContextManager[sqlite3.Connection]:
+def get_cache_connection() -> AbstractContextManager[sqlite3.Connection]:
     CACHE_DB.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(CACHE_DB))
     conn.row_factory = sqlite3.Row
@@ -33,14 +35,14 @@ def init_cache() -> None:
         conn.commit()
 
 
-def get_finding_hash(finding: Dict[str, Any]) -> str:
+def get_finding_hash(finding: dict[str, Any]) -> str:
     """Generate a hash based on rule_id, location, and code snippet."""
     key = f"{finding.get('id')}:{finding.get('location')}:{finding.get('code', '')}"
     return hashlib.sha256(key.encode()).hexdigest()
 
 
 class AIEnricher:
-    def __init__(self, api_key: Optional[str] = None, use_local: bool = False) -> None:
+    def __init__(self, api_key: str | None = None, use_local: bool = False) -> None:
         self.client = AIClient(api_key=api_key, use_local=use_local)
         self.available = self.client.is_available()
         init_cache()
@@ -52,7 +54,7 @@ class AIEnricher:
                     "[yellow]⚠️ No Mistral API key found. Set MISTRAL_API_KEY or use --ai-api-key.[/]"
                 )
 
-    def enrich(self, findings: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def enrich(self, findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Enrich each finding with AI analysis."""
         if not self.available:
             return findings  # no changes
@@ -86,7 +88,7 @@ class AIEnricher:
 
         return enriched
 
-    def _analyze_finding(self, finding: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def _analyze_finding(self, finding: dict[str, Any]) -> dict[str, Any] | None:
         """Call AI with prompt and parse JSON response."""
         # Build prompt
         vuln_type = finding.get("id", "unknown").replace("_", " ").title()
@@ -128,12 +130,12 @@ class AIEnricher:
                 "priority": data.get("priority", "Next Sprint"),
             }
             return result
-        except Exception as e:
-            console.print(f"[red]AI response parsing failed: {e}[/]")
+        except Exception as e:  # noqa: BLE001
             console.print(f"[dim]Response: {response[:200]}...[/]")
+            console.print(f"[red]AI response parsing failed: {e}[/]")
             return None
 
-    def _get_cached(self, f_hash: str) -> Optional[Dict[str, Any]]:
+    def _get_cached(self, f_hash: str) -> dict[str, Any] | None:
         """Retrieve cached analysis if fresh (< 7 days)."""
         with get_cache_connection() as conn:
             row = conn.execute(
@@ -141,16 +143,16 @@ class AIEnricher:
             ).fetchone()
             if row:
                 analyzed_at = datetime.fromisoformat(row["analyzed_at"])
-                if datetime.now() - analyzed_at < timedelta(days=7):
-                    res: Dict[str, Any] = json.loads(row["analysis"])
+                if datetime.now(timezone.utc).replace(tzinfo=None) - analyzed_at < timedelta(days=7):
+                    res: dict[str, Any] = json.loads(row["analysis"])
                     return res
         return None
 
-    def _cache_result(self, f_hash: str, analysis: Dict[str, Any]) -> None:
+    def _cache_result(self, f_hash: str, analysis: dict[str, Any]) -> None:
         """Cache the analysis result."""
         with get_cache_connection() as conn:
             conn.execute(
                 "INSERT OR REPLACE INTO ai_cache (finding_hash, analysis, analyzed_at) VALUES (?, ?, ?)",
-                (f_hash, json.dumps(analysis), datetime.now().isoformat()),
+                (f_hash, json.dumps(analysis), datetime.now(timezone.utc).replace(tzinfo=None).isoformat()),
             )
             conn.commit()

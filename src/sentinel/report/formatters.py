@@ -1,8 +1,8 @@
-import json
+from datetime import datetime, timezone
 import html as html_module
+import json
 from pathlib import Path
-from typing import List, Dict, Any
-from datetime import datetime
+from typing import Any
 
 from .. import __version__
 
@@ -21,10 +21,10 @@ def _sarif_level(severity: str) -> str:
     return mapping.get(severity.lower(), "warning")
 
 
-def to_json(findings: List[Dict[str, Any]], output_file: Path) -> None:
+def to_json(findings: list[dict[str, Any]], output_file: Path) -> None:
     """Write findings to a JSON file."""
     data = {
-        "generated_at": datetime.now().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "total_findings": len(findings),
         "findings": findings,
     }
@@ -32,10 +32,10 @@ def to_json(findings: List[Dict[str, Any]], output_file: Path) -> None:
         json.dump(data, f, indent=2)
 
 
-def to_sarif(findings: List[Dict[str, Any]], output_file: Path) -> None:
+def to_sarif(findings: list[dict[str, Any]], output_file: Path) -> None:
     """Convert findings to SARIF v2.1.0 format."""
     # SARIF structure
-    sarif: Dict[str, Any] = {
+    sarif: dict[str, Any] = {
         "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
         "version": "2.1.0",
         "runs": [
@@ -89,7 +89,7 @@ def to_sarif(findings: List[Dict[str, Any]], output_file: Path) -> None:
         json.dump(sarif, file, indent=2)
 
 
-def to_html(findings: List[Dict[str, Any]], output_file: Path) -> None:
+def to_html(findings: list[dict[str, Any]], output_file: Path) -> None:
     """Generate a self-contained HTML report."""
     html_template = """<!DOCTYPE html>
 <html>
@@ -173,7 +173,7 @@ def to_html(findings: List[Dict[str, Any]], output_file: Path) -> None:
         """
 
     html_content = html_template.format(
-        generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        generated_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
         critical=counts["Critical"],
         high=counts["High"],
         medium=counts["Medium"],

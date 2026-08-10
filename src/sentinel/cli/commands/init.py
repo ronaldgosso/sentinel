@@ -1,5 +1,6 @@
-import click
 from pathlib import Path
+
+import click
 from rich.console import Console
 
 console = Console()
@@ -9,9 +10,8 @@ console = Console()
 def init() -> None:
     """Create a default .sentinel.yml configuration file."""
     config_path = Path.cwd() / ".sentinel.yml"
-    if config_path.exists():
-        if not click.confirm(".sentinel.yml already exists. Overwrite?"):
-            return
+    if config_path.exists() and not click.confirm(".sentinel.yml already exists. Overwrite?"):
+        return
     template = """# Sentinel Configuration
 # See https://sentinel.dev/docs for all options.
 

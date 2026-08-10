@@ -1,13 +1,13 @@
 import click
-from .commands.scan import scan
+
 from .commands.init import init
+from .commands.scan import scan
 from .commands.update_db import update_db
 
 
 @click.group()
 def cli() -> None:
     """Sentinel – AI-Powered Security Hardening."""
-    pass
 
 
 cli.add_command(scan)

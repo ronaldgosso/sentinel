@@ -1,9 +1,10 @@
-from typing import List, Dict, Any
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+import re
+from typing import Any
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
+
 from .crawler import Crawler
 from .payloads import SQLI_PAYLOADS, XSS_PAYLOADS
 from .utils import HTTPClient
-import re
 
 
 class DASTFinding:
@@ -18,7 +19,7 @@ class DASTFinding:
         self.code_snippet = location
         self.ai_confirmed = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.rule_id,
             "severity": self.severity,
@@ -36,10 +37,10 @@ class DASTScanner:
     def __init__(self, target_url: str, max_pages: int = 20) -> None:
         self.target_url = target_url.rstrip("/")
         self.max_pages = max_pages
-        self.findings: List[DASTFinding] = []
+        self.findings: list[DASTFinding] = []
         self.client = HTTPClient(self.target_url)
 
-    def scan(self) -> List[DASTFinding]:
+    def scan(self) -> list[DASTFinding]:
         """Run the DAST scan: crawl + test endpoints."""
         # Step 1: Crawl
         crawler = Crawler(self.target_url, self.max_pages)
@@ -81,8 +82,7 @@ class DASTScanner:
                     continue
 
                 # Check for error-based SQLi (database error messages)
-                if payload_type == "error":
-                    if self._check_sql_error(resp.text):
+                if payload_type == "error" and self._check_sql_error(resp.text):
                         finding = DASTFinding(
                             severity="High",
                             location=f"{url} (param: {param})",
@@ -137,10 +137,7 @@ class DASTScanner:
                     continue
 
                 # Check if payload is reflected in the response
-                if payload in resp.text:
-                    # Confirm it's not just escaped
-                    # If payload appears as is (not HTML escaped)
-                    if payload in resp.text and not self._is_escaped(payload, resp.text):
+                if payload in resp.text and not self._is_escaped(payload, resp.text):
                         finding = DASTFinding(
                             severity="High",
                             location=f"{url} (param: {param})",

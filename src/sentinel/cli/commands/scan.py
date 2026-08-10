@@ -1,27 +1,28 @@
+from pathlib import Path
+from typing import Any
+
 import click
+from rich import box
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
-from rich.prompt import Prompt, Confirm
-from rich import box
-from pathlib import Path
+from rich.prompt import Confirm, Prompt
+from rich.table import Table
 
 from ... import __version__
+from ...ai.enricher import AIEnricher
+from ...fixer.engine import apply_fix
+from ...report.formatters import to_html, to_json, to_sarif
+from ...scanners.dast.engine import DASTScanner
 from ...scanners.sast.engine import SASTScanner
 from ...scanners.sca.engine import SCAScanner
-from ...scanners.dast.engine import DASTScanner
-from ...ai.enricher import AIEnricher
-from ...report.formatters import to_json, to_sarif, to_html
-from ...fixer.engine import apply_fix
-from typing import List, Dict, Any, Optional
 
 console = Console()
 
 
 def run_scan(
-    path: str, skip_sast: bool, skip_sca: bool, dast_url: Optional[str] = None
-) -> List[Dict[str, Any]]:
+    path: str, skip_sast: bool, skip_sca: bool, dast_url: str | None = None
+) -> list[dict[str, Any]]:
     """Orchestrate scanning without AI, return combined findings."""
     combined = []
     if not skip_sast:
@@ -69,14 +70,14 @@ def scan(
     path: str,
     ai: bool,
     ai_backend: str,
-    ai_api_key: Optional[str],
+    ai_api_key: str | None,
     ci: bool,
     skip_sast: bool,
     skip_sca: bool,
-    dast: Optional[str],
+    dast: str | None,
     fix: bool,
-    output_format: Optional[str],
-    output_file: Optional[str],
+    output_format: str | None,
+    output_file: str | None,
     fail_on: str,
 ) -> None:
     """Scan a Python project for vulnerabilities."""

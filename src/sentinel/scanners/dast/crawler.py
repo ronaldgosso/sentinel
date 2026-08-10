@@ -1,7 +1,8 @@
 import logging
+from urllib.parse import urljoin, urlparse
+
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, urljoin
-from typing import Set, List
+
 from .utils import HTTPClient
 
 logger = logging.getLogger(__name__)
@@ -11,11 +12,11 @@ class Crawler:
     def __init__(self, base_url: str, max_pages: int = 20) -> None:
         self.base_url = base_url.rstrip("/")
         self.max_pages = max_pages
-        self.visited: Set[str] = set()
-        self.to_visit: List[str] = [self.base_url]
+        self.visited: set[str] = set()
+        self.to_visit: list[str] = [self.base_url]
         self.client = HTTPClient(self.base_url)
 
-    def extract_links(self, html: str, current_url: str) -> List[str]:
+    def extract_links(self, html: str, current_url: str) -> list[str]:
         """Extract all href links from HTML, filter to same domain."""
         soup = BeautifulSoup(html, "html.parser")
         links = []
@@ -32,7 +33,7 @@ class Crawler:
                 links.append(full_url)
         return links
 
-    def crawl(self) -> List[str]:
+    def crawl(self) -> list[str]:
         """Crawl the base URL and return list of discovered URLs."""
         discovered = []
         while self.to_visit and len(self.visited) < self.max_pages:
