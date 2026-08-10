@@ -1,18 +1,23 @@
 import sqlite3
 import json
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Generator
 from datetime import datetime, timedelta
 import httpx
 
 DB_PATH = Path.home() / ".sentinel" / "vuln_cache.db"
 
 
-def get_db_connection() -> sqlite3.Connection:
+@contextmanager
+def get_db_connection() -> Generator[sqlite3.Connection, None, None]:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 
 def init_db() -> None:
@@ -95,7 +100,7 @@ def get_cvss_from_nvd(cve_id: str) -> Optional[Dict[str, Any]]:
                         with get_db_connection() as conn:
                             conn.execute(
                                 "INSERT OR REPLACE INTO nvd_cache (cve_id, cvss_score, cvss_severity, queried_at) VALUES (?, ?, ?, ?)",
-                                (cve_id, score, severity, datetime.now()),
+                                (cve_id, score, severity, datetime.now().isoformat()),
                             )
                             conn.commit()
                         return {"score": score, "severity": severity}

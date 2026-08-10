@@ -23,7 +23,10 @@ class HTTPClient:
     def get(self, path: str, params: Optional[Dict[str, Any]] = None) -> Optional[httpx.Response]:
         """GET request with rate limiting."""
         time.sleep(self.delay)  # be polite
-        url = urljoin(self.base_url + "/", path.lstrip("/"))
+        if path.startswith(("http://", "https://")):
+            url = path
+        else:
+            url = urljoin(self.base_url + "/", path.lstrip("/"))
         try:
             resp = self.session.get(url, params=params)
             return resp
@@ -33,7 +36,10 @@ class HTTPClient:
     def post(self, path: str, data: Optional[Dict[str, Any]] = None) -> Optional[httpx.Response]:
         """POST request with rate limiting."""
         time.sleep(self.delay)
-        url = urljoin(self.base_url + "/", path.lstrip("/"))
+        if path.startswith(("http://", "https://")):
+            url = path
+        else:
+            url = urljoin(self.base_url + "/", path.lstrip("/"))
         try:
             resp = self.session.post(url, data=data)
             return resp

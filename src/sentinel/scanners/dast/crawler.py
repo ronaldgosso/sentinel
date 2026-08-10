@@ -1,7 +1,10 @@
+import logging
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
 from typing import Set, List
 from .utils import HTTPClient
+
+logger = logging.getLogger(__name__)
 
 
 class Crawler:
@@ -37,7 +40,7 @@ class Crawler:
             if url in self.visited:
                 continue
             self.visited.add(url)
-            print(f"[DAST] Crawling: {url}")
+            logger.info("[DAST] Crawling: %s", url)
             resp = self.client.get(url)
             if resp and resp.status_code == 200:
                 discovered.append(url)

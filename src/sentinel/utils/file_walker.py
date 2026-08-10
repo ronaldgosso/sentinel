@@ -1,6 +1,12 @@
 import os
+import fnmatch
 from pathlib import Path
 from typing import List, Optional
+
+
+def _matches_any_pattern(name: str, patterns: List[str]) -> bool:
+    """Check if name matches any of the given glob patterns."""
+    return any(fnmatch.fnmatch(name, p) for p in patterns)
 
 
 def walk_source_files(root_path: str, ignore_patterns: Optional[List[str]] = None) -> List[Path]:
@@ -23,10 +29,13 @@ def walk_source_files(root_path: str, ignore_patterns: Optional[List[str]] = Non
     extensions = (".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css")
 
     for dirpath, dirnames, filenames in os.walk(root):
-        # Skip ignored directories
-        dirnames[:] = [d for d in dirnames if d not in ignore_patterns and not d.startswith(".")]
+        # Skip ignored directories (use fnmatch for glob patterns)
+        dirnames[:] = [
+            d for d in dirnames
+            if not _matches_any_pattern(d, ignore_patterns) and not d.startswith(".")
+        ]
         for fname in filenames:
-            if fname.endswith(extensions) and not fname.startswith("test_"):
+            if fname.endswith(extensions) and not _matches_any_pattern(fname, ignore_patterns):
                 full_path = Path(dirpath) / fname
                 source_files.append(full_path)
     return source_files
