@@ -1,8 +1,9 @@
 import json
 import hashlib
 import sqlite3
+from contextlib import contextmanager
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Generator
 from datetime import datetime, timedelta
 from .client import AIClient
 from .prompts import FINDING_ANALYSIS_PROMPT
@@ -13,11 +14,15 @@ console = Console()
 CACHE_DB = Path.home() / ".sentinel" / "ai_cache.db"
 
 
-def get_cache_connection() -> sqlite3.Connection:
+@contextmanager
+def get_cache_connection() -> Generator[sqlite3.Connection, None, None]:
     CACHE_DB.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(CACHE_DB))
     conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 
 def init_cache() -> None:
