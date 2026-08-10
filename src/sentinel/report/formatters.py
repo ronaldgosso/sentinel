@@ -1,7 +1,24 @@
 import json
+import html as html_module
 from pathlib import Path
 from typing import List, Dict, Any
 from datetime import datetime
+
+from .. import __version__
+
+
+def _sarif_level(severity: str) -> str:
+    """Map finding severity to SARIF-compliant level.
+
+    SARIF 2.1.0 only allows: error, warning, note, none.
+    """
+    mapping = {
+        "critical": "error",
+        "high": "error",
+        "medium": "warning",
+        "low": "note",
+    }
+    return mapping.get(severity.lower(), "warning")
 
 
 def to_json(findings: List[Dict[str, Any]], output_file: Path) -> None:
@@ -26,7 +43,7 @@ def to_sarif(findings: List[Dict[str, Any]], output_file: Path) -> None:
                 "tool": {
                     "driver": {
                         "name": "Sentinel",
-                        "version": "0.1.0",
+                        "version": __version__,
                         "informationUri": "https://github.com/ronaldgosso/sentinel",
                         "rules": [],
                     }
@@ -44,7 +61,7 @@ def to_sarif(findings: List[Dict[str, Any]], output_file: Path) -> None:
                 "id": rule_id,
                 "shortDescription": {"text": rule_id.replace("_", " ").title()},
                 "fullDescription": {"text": f.get("message", "")},
-                "defaultConfiguration": {"level": f.get("severity", "medium").lower()},
+                "defaultConfiguration": {"level": _sarif_level(f.get("severity", "Medium"))},
                 "help": {"text": f.get("fix", "")},
             }
     sarif["runs"][0]["tool"]["driver"]["rules"] = list(rules_map.values())
@@ -54,7 +71,7 @@ def to_sarif(findings: List[Dict[str, Any]], output_file: Path) -> None:
     for f in findings:
         result = {
             "ruleId": f.get("id", "unknown"),
-            "level": f.get("severity", "medium").lower(),
+            "level": _sarif_level(f.get("severity", "Medium")),
             "message": {"text": f.get("message", "")},
             "locations": [
                 {
@@ -117,7 +134,7 @@ def to_html(findings: List[Dict[str, Any]], output_file: Path) -> None:
             {rows}
         </tbody>
     </table>
-    <div class="footer">Reported by Sentinel v0.1.0</div>
+    <div class="footer">Reported by Sentinel v{version}</div>
 </div>
 </body>
 </html>"""
@@ -135,19 +152,22 @@ def to_html(findings: List[Dict[str, Any]], output_file: Path) -> None:
     for idx, f in enumerate(findings, 1):
         sev = f.get("severity", "Medium")
         sev_class = f"sev-{sev.lower()}"
+        raw_location = f.get("location", "")
         location = (
-            Path(f.get("location", "")).name
-            if ":" not in f.get("location", "")
-            else f.get("location", "")
+            Path(raw_location).name
+            if ":" not in raw_location
+            else raw_location
         )
-        fix = f.get("fix", "").replace("\n", "<br>")
+        fix = html_module.escape(f.get("fix", "")).replace("\n", "<br>")
+        escaped_id = html_module.escape(f.get('id', '').replace('_', ' ').title())
+        escaped_location = html_module.escape(str(location))
         rows += f"""
         <tr>
             <td>{idx}</td>
-            <td><span class="{sev_class}">{sev}</span></td>
-            <td>{f.get('id', '').replace('_', ' ').title()}</td>
-            <td>{location}</td>
-            <td>{f.get('line', '')}</td>
+            <td><span class="{html_module.escape(sev_class)}">{html_module.escape(sev)}</span></td>
+            <td>{escaped_id}</td>
+            <td>{escaped_location}</td>
+            <td>{html_module.escape(str(f.get('line', '')))}</td>
             <td><div class="fix">{fix}</div></td>
         </tr>
         """
@@ -159,6 +179,7 @@ def to_html(findings: List[Dict[str, Any]], output_file: Path) -> None:
         medium=counts["Medium"],
         low=counts["Low"],
         rows=rows,
+        version=__version__,
     )
     with open(output_file, "w", encoding="utf-8") as file:
         file.write(html_content)

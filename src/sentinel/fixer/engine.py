@@ -30,7 +30,7 @@ def apply_fix(finding: Dict[str, Any], dry_run: bool = False) -> bool:
         return False
 
     # Read file content
-    with open(filepath, "r") as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     if line_no < 1 or line_no > len(lines):
@@ -88,7 +88,7 @@ def apply_fix(finding: Dict[str, Any], dry_run: bool = False) -> bool:
         backup_file(filepath)
         # Apply change
         lines[line_no - 1] = new_line
-        with open(filepath, "w") as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             f.writelines(lines)
 
     return True
