@@ -7,6 +7,7 @@ from rich.prompt import Prompt, Confirm
 from rich import box
 from pathlib import Path
 
+from ... import __version__
 from ...scanners.sast.engine import SASTScanner
 from ...scanners.sca.engine import SCAScanner
 from ...scanners.dast.engine import DASTScanner
@@ -81,7 +82,8 @@ def scan(
     """Scan a Python project for vulnerabilities."""
     console.print(
         Panel.fit(
-            "[bold blue]🔍 Sentinel v0.1.0[/] – AI‑Powered Security Hardening", border_style="blue"
+            f"[bold blue]🔍 Sentinel v{__version__}[/] – AI‑Powered Security Hardening",
+            border_style="blue",
         )
     )
 

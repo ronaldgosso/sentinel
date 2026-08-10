@@ -10,8 +10,7 @@ def init() -> None:
     """Create a default .sentinel.yml configuration file."""
     config_path = Path.cwd() / ".sentinel.yml"
     if config_path.exists():
-        console.print("[yellow].sentinel.yml already exists. Overwrite? (y/n)[/]")
-        if not click.confirm(""):
+        if not click.confirm(".sentinel.yml already exists. Overwrite?"):
             return
     template = """# Sentinel Configuration
 # See https://sentinel.dev/docs for all options.
