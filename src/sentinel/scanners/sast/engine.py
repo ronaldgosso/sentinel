@@ -1,6 +1,6 @@
 import ast
 from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import Any
 
 from .rule_loader import Rule, load_rules
 from .detectors import (
@@ -46,7 +46,7 @@ class Finding:
         self.cwe = cwe
         self.ai_confirmed = ai_confirmed
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.rule_id,
             "severity": self.severity,
@@ -61,16 +61,16 @@ class Finding:
 
 
 class SASTScanner:
-    def __init__(self, rules_dir: Optional[str] = None):
+    def __init__(self, rules_dir: str | None = None):
         self.rules = load_rules(rules_dir)
-        self.findings: List[Finding] = []
+        self.findings: list[Finding] = []
 
-    def scan_file(self, filepath: Path) -> List[Finding]:
+    def scan_file(self, filepath: Path) -> list[Finding]:
         """Scan a single Python file using AST and detectors."""
         try:
             with open(filepath, "r", encoding="utf-8") as f:
                 source = f.read()
-        except Exception:
+        except (IOError, OSError):
             return []  # skip unreadable files
 
         # Parse AST only for Python files
@@ -108,16 +108,14 @@ class SASTScanner:
 
         return findings
 
-    def _find_matching_rule(
-        self, detector_name: str, finding_data: Dict[str, Any]
-    ) -> Optional[Rule]:
+    def _find_matching_rule(self, detector_name: str, finding_data: dict[str, Any]) -> Rule | None:
         """Find a rule that matches this detector and context."""
         for rule in self.rules:
             if detector_name in rule.id:
                 return rule
         return None
 
-    def scan_directory(self, root_path: str) -> List[Finding]:
+    def scan_directory(self, root_path: str) -> list[Finding]:
         """Scan all source files in a directory."""
         from ...utils.file_walker import walk_source_files
 

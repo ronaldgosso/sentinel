@@ -1,15 +1,15 @@
 import sqlite3
 import json
-from contextlib import closing
+from contextlib import AbstractContextManager, closing
 from pathlib import Path
-from typing import Dict, Any, Optional, ContextManager
-from datetime import datetime, timedelta
+from typing import Any
+from datetime import datetime, timedelta, timezone
 import httpx
 
 DB_PATH = Path.home() / ".sentinel" / "vuln_cache.db"
 
 
-def get_db_connection() -> ContextManager[sqlite3.Connection]:
+def get_db_connection() -> AbstractContextManager[sqlite3.Connection]:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
@@ -61,17 +61,20 @@ def query_osv(package: str, version: str, ecosystem: str = "PyPI") -> Any:
                 return data.get("vulns", [])
             else:
                 return []
-    except Exception:
+    except (httpx.HTTPError, TimeoutError) as e:
+        import logging
+
+        logging.warning(f"Failed to query OSV for {package}: {e}")
         return []
 
 
-def get_cvss_from_nvd(cve_id: str) -> Optional[Dict[str, Any]]:
+def get_cvss_from_nvd(cve_id: str) -> dict[str, Any] | None:
     """Fetch CVSS details from NVD API (cached)."""
     # Check cache first
     with get_db_connection() as conn:
         row = conn.execute(
             "SELECT cvss_score, cvss_severity FROM nvd_cache WHERE cve_id = ? AND queried_at > ?",
-            (cve_id, datetime.now() - timedelta(days=7)),
+            (cve_id, (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()),
         ).fetchone()
         if row:
             return {"score": row["cvss_score"], "severity": row["cvss_severity"]}
@@ -96,13 +99,15 @@ def get_cvss_from_nvd(cve_id: str) -> Optional[Dict[str, Any]]:
                         with get_db_connection() as conn:
                             conn.execute(
                                 "INSERT OR REPLACE INTO nvd_cache (cve_id, cvss_score, cvss_severity, queried_at) VALUES (?, ?, ?, ?)",
-                                (cve_id, score, severity, datetime.now().isoformat()),
+                                (cve_id, score, severity, datetime.now(timezone.utc).isoformat()),
                             )
                             conn.commit()
                         return {"score": score, "severity": severity}
-    except Exception:
-        pass
-    return None
+    except (httpx.HTTPError, TimeoutError) as e:
+        import logging
+
+        logging.warning(f"Failed to fetch CVSS from NVD for {cve_id}: {e}")
+        return None
 
 
 def get_vulnerabilities(
@@ -122,7 +127,9 @@ def get_vulnerabilities(
             if row:
                 # refresh if older than 24h
                 queried_at = datetime.fromisoformat(row["queried_at"])
-                if datetime.now() - queried_at < timedelta(hours=24):
+                if queried_at.tzinfo is None:
+                    queried_at = queried_at.replace(tzinfo=timezone.utc)
+                if datetime.now(timezone.utc) - queried_at < timedelta(hours=24):
                     return json.loads(row["vuln_data"])
 
     # Query OSV
@@ -141,7 +148,13 @@ def get_vulnerabilities(
     with get_db_connection() as conn:
         conn.execute(
             "INSERT OR REPLACE INTO cache (package, version, ecosystem, vuln_data, queried_at) VALUES (?, ?, ?, ?, ?)",
-            (package, version, ecosystem, json.dumps(vulns), datetime.now().isoformat()),
+            (
+                package,
+                version,
+                ecosystem,
+                json.dumps(vulns),
+                datetime.now(timezone.utc).isoformat(),
+            ),
         )
         conn.commit()
 
