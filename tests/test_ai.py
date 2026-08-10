@@ -6,7 +6,7 @@ def test_finding_hash() -> None:
     f = {"id": "sql_injection", "location": "auth.py:42", "code": "query = f'SELECT...'"}
     h = get_finding_hash(f)
     assert isinstance(h, str)
-    assert len(h) == 32
+    assert len(h) == 64  # SHA256 hex digest length
 
 
 # Mock client for testing

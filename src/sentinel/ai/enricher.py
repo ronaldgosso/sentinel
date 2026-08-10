@@ -35,7 +35,7 @@ def init_cache() -> None:
 def get_finding_hash(finding: Dict[str, Any]) -> str:
     """Generate a hash based on rule_id, location, and code snippet."""
     key = f"{finding.get('id')}:{finding.get('location')}:{finding.get('code', '')}"
-    return hashlib.md5(key.encode()).hexdigest()
+    return hashlib.sha256(key.encode()).hexdigest()
 
 
 class AIEnricher:
