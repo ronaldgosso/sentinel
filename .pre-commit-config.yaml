@@ -14,7 +14,7 @@ repos:
     hooks:
       - id: sentinel-self-scan
         name: Sentinel self-scan
-        entry: sentinel --ci .
+        entry: sentinel scan --ci --no-ai .
         language: system
         pass_filenames: false
         stages: [manual]

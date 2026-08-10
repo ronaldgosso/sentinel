@@ -49,7 +49,7 @@ runs:
           -v ${{ github.workspace }}:/app \
           -v /app/rules:/app/rules \
           -e MISTRAL_API_KEY=${{ inputs.api-key }} \
-          ghcr.io/${{ github.repository }}/sentinel:latest \
+          ghcr.io/${{ github.repository }}:latest \
           scan ${{ inputs.working-directory }} \
           --ci \
           --fail-on ${{ inputs.fail-on }} \
