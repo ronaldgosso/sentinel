@@ -1,23 +1,19 @@
 import sqlite3
 import json
-from contextlib import contextmanager
+from contextlib import closing
 from pathlib import Path
-from typing import Dict, Any, Optional, Generator
+from typing import Dict, Any, Optional, ContextManager
 from datetime import datetime, timedelta
 import httpx
 
 DB_PATH = Path.home() / ".sentinel" / "vuln_cache.db"
 
 
-@contextmanager
-def get_db_connection() -> Generator[sqlite3.Connection, None, None]:
+def get_db_connection() -> ContextManager[sqlite3.Connection]:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
-    try:
-        yield conn
-    finally:
-        conn.close()
+    return closing(conn)
 
 
 def init_db() -> None:
