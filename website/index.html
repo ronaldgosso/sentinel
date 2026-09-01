@@ -3,245 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel - AI-Powered Security Hardening (SAST, SCA, DAST)</title>
-    <meta name="description" content="Sentinel is an AI-powered interactive security scanner (SAST, SCA, DAST) for Python, JavaScript/TypeScript, HTML, and CSS developers. Audit dependencies, crawl live web apps, and apply code auto-fixes offline or with Mistral/Ollama AI.">
-    <meta name="keywords" content="security, scanner, SAST, SCA, DAST, AI, security hardening, Python security, JavaScript security, Mistral, Ollama, code fixer">
+    <title>Sentinel — AI-Powered Security Hardening (SAST, SCA, DAST)</title>
+    <meta name="description" content="Sentinel is an AI-powered security scanner and auto-fixer for Python, JavaScript/TypeScript, and frontend applications. Dual-tier Mistral AI assistance, GitHub PR Bot integration, and instant offline remediations.">
+    <meta name="keywords" content="security, scanner, SAST, SCA, DAST, AI security, security hardening, Python SAST, JavaScript security, Mistral AI, Ollama, GitHub Bot, Code Fixer">
     <meta name="author" content="Ronald Gosso">
-    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Background Ambient Glows -->
+    <div class="ambient-glow glow-top-left" aria-hidden="true"></div>
+    <div class="ambient-glow glow-bottom-right" aria-hidden="true"></div>
+
+    <!-- Header / Navbar -->
     <header class="navbar">
-        <div class="logo">Sentinel</div>
-        <nav>
-            <a href="#demo-video">Video Tour</a>
-            <a href="#playground">Interactive Demo</a>
-            <a href="#features">Features</a>
-            <a href="#how-it-works">How It Works</a>
-            <a href="https://github.com/ronaldgosso/sentinel" class="nav-btn" id="nav-github-btn">GitHub</a>
-        </nav>
+        <div class="nav-container">
+            <a href="#" class="logo" aria-label="Sentinel Home">
+                <span class="logo-shield">🛡️</span>
+                <span class="logo-text">Sentinel</span>
+            </a>
+            
+            <nav class="nav-links" id="nav-links">
+                <a href="#dual-tier-ai">Dual-Tier AI</a>
+                <a href="#github-bot">GitHub PR Bot</a>
+                <a href="#playground">Vulnerability Playground</a>
+                <a href="#features">Capabilities</a>
+                <a href="#cli-quickstart">CLI Commands</a>
+                <a href="https://github.com/ronaldgosso/sentinel" class="nav-btn-github" target="_blank" rel="noopener noreferrer" id="nav-github-btn">
+                    <svg class="github-icon" height="18" width="18" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                    <span>Star on GitHub</span>
+                </a>
+            </nav>
+        </div>
     </header>
 
-    <section class="hero">
-        <div class="hero-content">
-            <div class="badge-container">
-                <span class="badge version-badge">v1.0.12</span>
-            </div>
-            <h1>AI-Powered Security Hardening for <span class="highlight">Python & Frontend Developers</span></h1>
-            <p>Stop shipping vulnerabilities to production. Sentinel catches critical flaws in Python, JS/TS, HTML, and CSS before you merge, with intelligent offline protocols and AI-driven auto-fixes.</p>
-            <div class="hero-ctas">
-                <a href="https://github.com/ronaldgosso/sentinel" class="btn primary" id="hero-get-started">Get Started</a>
-                <a href="https://github.com/ronaldgosso/sentinel" class="btn secondary" id="hero-star-github">Star on GitHub</a>
-            </div>
-            <div class="install-snippet">
-                <code>pip install sentinel-scanner</code>
-                <button id="copy-btn">Copy</button>
-            </div>
-        </div>
-        <div class="hero-visual">
-            <div class="terminal">
-                <div class="terminal-header">
-                    <span class="dot red"></span>
-                    <span class="dot yellow"></span>
-                    <span class="dot green"></span>
-                </div>
-                <div class="terminal-body" id="terminal-typing">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="problem-solution">
-        <div class="card problem">
-            <h3>The Problem</h3>
-            <p>Vulnerabilities often slip past manual code reviews straight to production. Traditional security scanners output massive, unreadable JSON logs, causing alert fatigue and slower remediation times.</p>
-        </div>
-        <div class="card solution">
-            <h3>The Solution</h3>
-            <p>Sentinel runs directly in your local terminal or CI/CD pipelines. It utilizes standardized security protocols offline, or Mistral AI / Ollama online, to explain raw security risks and apply safe, one-click code remediations.</p>
-        </div>
-    </section>
-
-    <section id="demo-video" class="video-section">
-        <div class="section-header">
-            <h2>Sentinel in Action</h2>
-            <p class="subtitle">Watch how Sentinel conducts multi-engine security scans, enriches findings with AI, and applies auto-fixes live in the terminal.</p>
-        </div>
-        <div class="video-container">
-            <div class="window-frame">
-                <div class="window-header">
-                    <span class="window-dot red"></span>
-                    <span class="window-dot yellow"></span>
-                    <span class="window-dot green"></span>
-                    <span class="window-title">sentinel_demo_v1.0.12.mp4</span>
-                </div>
-                <div class="window-body">
-                    <video id="sentinel-video" preload="metadata" controls playsinline>
-                        <source src="sentinel.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </div>
-            <div class="video-highlights">
-                <h3>Scan, Triage, and Auto-Fix</h3>
-                <ul class="highlights-list">
-                    <li>
-                        <span class="highlight-icon">💻</span>
-                        <div class="highlight-text">
-                            <strong>Interactive TUI Dashboard</strong>
-                            <p>Browse vulnerability findings, review exploit paths, and apply code patches in a beautiful terminal-based UI.</p>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="highlight-icon">⚡</span>
-                        <div class="highlight-text">
-                            <strong>Local Dependency Caching</strong>
-                            <p>Fast SCA checking against OSV.dev and NVD by keeping a local SQLite database cache (`~/.sentinel/vuln_cache.db`).</p>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="highlight-icon">🧠</span>
-                        <div class="highlight-text">
-                            <strong>Dual AI Engine (Cloud / Local)</strong>
-                            <p>Connect to Mistral AI in the cloud or integrate a local Ollama instance for secure, offline AI triage.</p>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="highlight-icon">🕵️</span>
-                        <div class="highlight-text">
-                            <strong>Multi-Language SAST & DAST</strong>
-                            <p>Deep scan structures in Python, JS/TS, HTML, and CSS. Audit live endpoints dynamically for injections and misconfigured security headers.</p>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <section id="playground" class="playground-section">
-        <h2>Interactive Vulnerability Playground</h2>
-        <p class="subtitle">Select a vulnerability type to view how Sentinel detects it and applies safe security remediations offline.</p>
-        
-        <div class="playground-container">
-            <div class="playground-sidebar">
-                <button class="pg-tab active" data-vuln="sqli">SQL Injection</button>
-                <button class="pg-tab" data-vuln="xss">Cross-Site Scripting (XSS)</button>
-                <button class="pg-tab" data-vuln="cmd">Command Injection</button>
-                <button class="pg-tab" data-vuln="secrets">Hardcoded Secrets</button>
-                <button class="pg-tab" data-vuln="crypto">Insecure Cryptography</button>
-                <button class="pg-tab" data-vuln="frontend">Frontend Security</button>
-            </div>
-            
-            <div class="playground-content">
-                <div class="vuln-info">
-                    <h3 id="vuln-title">SQL Injection (CWE-89)</h3>
-                    <p id="vuln-desc">Concatenating untrusted user inputs directly into SQL query strings.</p>
-                    <div class="remediation-box">
-                        <strong>Offline Remediation Protocol:</strong>
-                        <p id="vuln-remediation">Protocol: Parameterized Queries. Replace string concatenation or formatting inside SQL executions with placeholders and pass query parameters as a tuple. Example: Change cursor.execute(f'SELECT * FROM users WHERE username = "{user}"') to cursor.execute('SELECT * FROM users WHERE username = ?', (user,)).</p>
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="badge-pill">
+                        <span class="pulse-dot"></span>
+                        <span class="badge-text">Sentinel v1.0.12 — Dual-Tier AI & GitHub Bot Active</span>
+                    </div>
+                    
+                    <h1 class="hero-title">
+                        AI-Powered Security Hardening for <span class="gradient-text">Developers & CI/CD</span>
+                    </h1>
+                    
+                    <p class="hero-description">
+                        Stop security vulnerabilities before they reach production. Sentinel scans SAST, SCA, and DAST across Python, JS/TS, and HTML, explains real exploit paths with built-in Mistral AI, and applies safe auto-fixes with 1 click.
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <a href="https://github.com/ronaldgosso/sentinel" class="btn btn-primary" id="hero-get-started">
+                            <span>Get Started Free</span>
+                            <span class="btn-arrow">→</span>
+                        </a>
+                        <a href="#dual-tier-ai" class="btn btn-secondary" id="hero-learn-ai">
+                            <span>Explore Dual-Tier AI</span>
+                        </a>
+                    </div>
+                    
+                    <div class="install-card">
+                        <div class="install-prefix">$</div>
+                        <code id="pip-command">pip install sentinel-scanner</code>
+                        <button class="copy-btn" id="copy-btn" title="Copy command" aria-label="Copy install command">
+                            <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span id="copy-label">Copy</span>
+                        </button>
+                    </div>
+                    
+                    <div class="hero-features-chips">
+                        <span class="chip">✓ Built-in AI with Rate Limiting</span>
+                        <span class="chip">✓ Zero Config Required</span>
+                        <span class="chip">✓ Automated PR Bot</span>
                     </div>
                 </div>
+
+                <!-- Interactive Hero Terminal -->
+                <div class="hero-visual">
+                    <div class="terminal-window">
+                        <div class="terminal-topbar">
+                            <div class="terminal-dots">
+                                <span class="dot dot-red"></span>
+                                <span class="dot dot-yellow"></span>
+                                <span class="dot dot-green"></span>
+                            </div>
+                            <div class="terminal-title">sentinel scan . --ai</div>
+                            <div class="terminal-status-badge">LIVE DEMO</div>
+                        </div>
+                        <div class="terminal-screen" id="terminal-typing">
+                            <!-- Injected dynamically via script.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats / Proof Banner -->
+        <section class="proof-banner">
+            <div class="proof-grid">
+                <div class="proof-stat">
+                    <span class="stat-number">3-in-1</span>
+                    <span class="stat-label">SAST + SCA + DAST Engines</span>
+                </div>
+                <div class="proof-stat">
+                    <span class="stat-number">1-Click</span>
+                    <span class="stat-label">AI Remediation & Patching</span>
+                </div>
+                <div class="proof-stat">
+                    <span class="stat-number">0 Setup</span>
+                    <span class="stat-label">Built-in AI Key Included</span>
+                </div>
+                <div class="proof-stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Open Source & CI/CD Ready</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dual-Tier AI Section (NEW) -->
+        <section id="dual-tier-ai" class="section dual-tier-section">
+            <div class="section-header">
+                <div class="section-tag">INTELLIGENT AI ENGINE</div>
+                <h2>Dual-Tier AI Architecture</h2>
+                <p class="section-subtitle">
+                    Enjoy built-in AI assistance with automatic rate limiting and exponential backoff retry, or bring your own Mistral key for unrestricted high-speed analysis.
+                </p>
+            </div>
+
+            <div class="dual-tier-grid">
+                <!-- Tier 1: Default Key -->
+                <div class="tier-card default-tier">
+                    <div class="tier-badge">OUT-OF-THE-BOX</div>
+                    <div class="tier-icon">⚡</div>
+                    <h3>Default Community Tier</h3>
+                    <p class="tier-desc">Ready instantly with zero setup or registration. Uses Sentinel's embedded Mistral AI engine.</p>
+                    
+                    <ul class="tier-features">
+                        <li><span class="check">✓</span> <strong>Included by default:</strong> No API key needed</li>
+                        <li><span class="check">✓</span> <strong>Smart Rate Limiter:</strong> 1.0 req/s client pacing</li>
+                        <li><span class="check">✓</span> <strong>HTTP 429 Adaptive Backoff:</strong> Exponential retry & Retry-After support</li>
+                        <li><span class="check">✓</span> <strong>SQLite Local Cache:</strong> Zero repeated queries</li>
+                    </ul>
+
+                    <div class="code-snippet-box">
+                        <div class="snippet-label">Terminal Command</div>
+                        <code>sentinel scan .</code>
+                    </div>
+                </div>
+
+                <!-- Tier 2: Custom Key -->
+                <div class="tier-card custom-tier highlight-tier">
+                    <div class="tier-badge popular-badge">UNRESTRICTED SPEED</div>
+                    <div class="tier-icon">🚀</div>
+                    <h3>Bring Your Own Key (BYOK)</h3>
+                    <p class="tier-desc">Provide your personal Mistral API key for unthrottled maximum throughput and custom models.</p>
+                    
+                    <ul class="tier-features">
+                        <li><span class="check">✓</span> <strong>Unrestricted Speed:</strong> Artificial rate limiting bypassed</li>
+                        <li><span class="check">✓</span> <strong>Custom Models:</strong> `mistral-small-latest`, `codestral-latest`, etc.</li>
+                        <li><span class="check">✓</span> <strong>Custom Pacing Option:</strong> `--ai-rate-limit <rps>`</li>
+                        <li><span class="check">✓</span> <strong>Local Backend:</strong> Fully offline with `--ai-backend local` (Ollama)</li>
+                    </ul>
+
+                    <div class="code-snippet-box">
+                        <div class="snippet-label">Terminal Command</div>
+                        <code>export MISTRAL_API_KEY=your-key<br>sentinel scan . --ai-model codestral-latest</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GitHub PR Bot Section (NEW) -->
+        <section id="github-bot" class="section github-bot-section">
+            <div class="section-header">
+                <div class="section-tag">AUTOMATED CI/CD BOT</div>
+                <h2>Automated GitHub Security Bot</h2>
+                <p class="section-subtitle">
+                    Sentinel runs automatically on every Pull Request and push, posting rich Markdown vulnerability reports and uploading SARIF security alerts.
+                </p>
+            </div>
+
+            <div class="bot-showcase-container">
+                <!-- Interactive PR Simulator Preview -->
+                <div class="pr-simulator">
+                    <div class="pr-header">
+                        <div class="pr-meta">
+                            <span class="pr-badge-open">Open</span>
+                            <span class="pr-title">Pull Request #42: Add User Authentication Endpoint</span>
+                        </div>
+                        <div class="pr-author">opened by <strong>dev-team</strong> into <code>main</code></div>
+                    </div>
+
+                    <div class="pr-comment-box">
+                        <div class="bot-avatar-row">
+                            <div class="bot-avatar">🤖</div>
+                            <div class="bot-name">
+                                <strong>github-actions</strong>
+                                <span class="bot-tag">bot</span>
+                                <span class="bot-time">commented just now</span>
+                            </div>
+                        </div>
+
+                        <div class="bot-comment-body">
+                            <h3>🔍 Sentinel Security Scan Report</h3>
+                            <div class="alert-banner alert-danger">
+                                <strong>🔴 Status: Vulnerabilities Detected (2 total)</strong> — Threshold: <code>High</code>
+                            </div>
+
+                            <table class="report-table">
+                                <thead>
+                                    <tr>
+                                        <th>🔴 Critical</th>
+                                        <th>🟠 High</th>
+                                        <th>🟡 Medium</th>
+                                        <th>🟢 Low</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>1</strong></td>
+                                        <td><strong>1</strong></td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <details class="pr-details" open>
+                                <summary><b>🔎 Detailed Findings & AI Remediation Recommendations</b></summary>
+                                <div class="finding-card">
+                                    <div class="finding-header">
+                                        <span class="badge-critical">🔴 Critical</span>
+                                        <strong>SQL Injection (CWE-89)</strong>
+                                        <code>app/auth.py:42</code>
+                                    </div>
+                                    <p>Direct user input concatenated into raw SQL statement.</p>
+                                    <div class="code-diff">
+                                        <div class="diff-line diff-remove">- query = f"SELECT * FROM users WHERE username = '{user}'"</div>
+                                        <div class="diff-line diff-add">+ query = "SELECT * FROM users WHERE username = ?"</div>
+                                        <div class="diff-line diff-add">+ cursor.execute(query, (user,))</div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Setup snippet -->
+                <div class="bot-setup-card">
+                    <h3>1-Command Workflow Generator</h3>
+                    <p>Initialize the complete GitHub Action bot workflow in any repository with a single command:</p>
+                    <div class="setup-code">
+                        <code>sentinel init --github-action</code>
+                        <button class="btn btn-sm btn-outline" id="copy-init-btn">Copy</button>
+                    </div>
+                    <ul class="setup-perks">
+                        <li>📌 Generates <code>.github/workflows/sentinel.yml</code></li>
+                        <li>📌 Posts / updates PR comments automatically</li>
+                        <li>📌 Writes directly to GitHub Actions Job Summary</li>
+                        <li>📌 Uploads SARIF annotations to GitHub Code Scanning</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Section -->
+        <section id="demo-video" class="section video-section">
+            <div class="section-header">
+                <div class="section-tag">WALKTHROUGH DEMO</div>
+                <h2>See Sentinel In Action</h2>
+                <p class="section-subtitle">
+                    Watch Sentinel conduct multi-engine scans, evaluate attack scenarios with AI, and apply auto-fixes live in the terminal.
+                </p>
+            </div>
+            <div class="video-container">
+                <div class="window-frame">
+                    <div class="window-header">
+                        <div class="window-dots">
+                            <span class="window-dot red"></span>
+                            <span class="window-dot yellow"></span>
+                            <span class="window-dot green"></span>
+                        </div>
+                        <div class="window-title">sentinel_demo_tour.mp4</div>
+                    </div>
+                    <div class="window-body">
+                        <video id="sentinel-video" preload="metadata" controls playsinline>
+                            <source src="sentinel.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Playground -->
+        <section id="playground" class="section playground-section">
+            <div class="section-header">
+                <div class="section-tag">INTERACTIVE TRIAGE</div>
+                <h2>Vulnerability Remediation Playground</h2>
+                <p class="section-subtitle">
+                    Select a vulnerability to see how Sentinel identifies structural patterns and generates secure remediations offline or with AI.
+                </p>
+            </div>
+            
+            <div class="playground-container">
+                <div class="playground-sidebar" role="tablist" aria-label="Vulnerabilities">
+                    <button class="pg-tab active" data-vuln="sqli" role="tab" aria-selected="true">
+                        <span class="tab-icon">🗄️</span>
+                        <span class="tab-text">SQL Injection</span>
+                    </button>
+                    <button class="pg-tab" data-vuln="xss" role="tab" aria-selected="false">
+                        <span class="tab-icon">⚡</span>
+                        <span class="tab-text">Cross-Site Scripting (XSS)</span>
+                    </button>
+                    <button class="pg-tab" data-vuln="cmd" role="tab" aria-selected="false">
+                        <span class="tab-icon">💻</span>
+                        <span class="tab-text">Command Injection</span>
+                    </button>
+                    <button class="pg-tab" data-vuln="secrets" role="tab" aria-selected="false">
+                        <span class="tab-icon">🔑</span>
+                        <span class="tab-text">Hardcoded Secrets</span>
+                    </button>
+                    <button class="pg-tab" data-vuln="crypto" role="tab" aria-selected="false">
+                        <span class="tab-icon">🔒</span>
+                        <span class="tab-text">Weak Cryptography</span>
+                    </button>
+                    <button class="pg-tab" data-vuln="frontend" role="tab" aria-selected="false">
+                        <span class="tab-icon">🌐</span>
+                        <span class="tab-text">Frontend & DOM XSS</span>
+                    </button>
+                </div>
                 
-                <div class="code-editor-container">
-                    <div class="editor-pane">
-                        <div class="pane-header">Vulnerable Code</div>
-                        <pre><code id="code-vuln"># Unsafe SQL Construction
+                <div class="playground-content">
+                    <div class="vuln-info">
+                        <div class="vuln-header-row">
+                            <h3 id="vuln-title">SQL Injection (CWE-89)</h3>
+                            <span class="vuln-badge-tag" id="vuln-badge">OWASP Top 10</span>
+                        </div>
+                        <p id="vuln-desc">Concatenating untrusted user inputs directly into SQL query strings.</p>
+                        
+                        <div class="remediation-box">
+                            <div class="remediation-header">
+                                <span class="remediation-icon">💡</span>
+                                <strong>Remediation Protocol:</strong>
+                            </div>
+                            <p id="vuln-remediation">Protocol: Parameterized Queries. Replace string concatenation or formatting inside SQL executions with placeholders and pass query parameters as a tuple. Example: Change cursor.execute(f'SELECT * FROM users WHERE username = "{user}"') to cursor.execute('SELECT * FROM users WHERE username = ?', (user,)).</p>
+                        </div>
+                    </div>
+                    
+                    <div class="code-editor-container">
+                        <div class="editor-pane">
+                            <div class="pane-header">
+                                <span>❌ Vulnerable Code</span>
+                                <span class="pane-lang">Python</span>
+                            </div>
+                            <pre><code id="code-vuln"># Unsafe SQL Construction
 def get_user(user_id):
     query = f"SELECT * FROM users WHERE id = {user_id}"
     return db.execute(query)</code></pre>
-                    </div>
-                    <div class="editor-pane">
-                        <div class="pane-header">Remediated Code</div>
-                        <div class="remediated-wrapper">
-                            <pre><code id="code-fixed"># Click 'Apply Auto-Fix' to see secure code</code></pre>
-                            <div class="blur-overlay" id="blur-overlay">
-                                <button id="fix-btn" class="btn primary">Apply Auto-Fix</button>
+                        </div>
+                        <div class="editor-pane">
+                            <div class="pane-header">
+                                <span>✅ Hardened Remediation</span>
+                                <span class="pane-lang">Auto-Fix</span>
+                            </div>
+                            <div class="remediated-wrapper">
+                                <pre><code id="code-fixed"># Click 'Apply Auto-Fix' to see secure code</code></pre>
+                                <div class="blur-overlay" id="blur-overlay">
+                                    <button id="fix-btn" class="btn btn-primary">Apply AI Auto-Fix</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="features" class="features">
-        <h2>Built-in Capabilities</h2>
-        <p class="subtitle">Sentinel combines multiple scanner paradigms and AI to automate application hardening.</p>
-        <div class="grid">
-            <div class="feature-card">
-                <div class="card-icon">🔍</div>
-                <h4>Static Analysis (SAST)</h4>
-                <p>Analyzes AST structures to catch SQLi, XSS, commands, secrets, and weak cryptosystems in Python, JavaScript, and TypeScript.</p>
+        <!-- Capabilities & Features (Bento Grid) -->
+        <section id="features" class="section features-section">
+            <div class="section-header">
+                <div class="section-tag">COMPREHENSIVE SUITE</div>
+                <h2>Built-in Security Capabilities</h2>
+                <p class="section-subtitle">
+                    Sentinel brings together multiple scanner paradigms into a unified, developer-friendly hardening engine.
+                </p>
             </div>
-            <div class="feature-card">
-                <div class="card-icon">📦</div>
-                <h4>Dependency Audit (SCA)</h4>
-                <p>Audits dependencies in `requirements.txt`, `package.json`, and `go.mod` against OSV/NVD with local SQLite speed caching.</p>
+            
+            <div class="bento-grid">
+                <!-- Card 1 -->
+                <div class="bento-card card-span-2">
+                    <div class="card-icon-wrap">🔍</div>
+                    <h4>Static Application Security (SAST)</h4>
+                    <p>Parses Abstract Syntax Trees (AST) in Python, JavaScript, TypeScript, and HTML templates to detect SQLi, XSS, command execution, hardcoded credentials, and weak hashing.</p>
+                    <div class="card-tags">
+                        <span>Python AST</span>
+                        <span>TypeScript / JSX</span>
+                        <span>Regex & Structural Rules</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bento-card">
+                    <div class="card-icon-wrap">📦</div>
+                    <h4>Software Composition (SCA)</h4>
+                    <p>Scans <code>requirements.txt</code>, <code>pyproject.toml</code>, <code>package.json</code>, and <code>go.mod</code> against OSV.dev and NVD databases with local SQLite caching.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bento-card">
+                    <div class="card-icon-wrap">🕸️</div>
+                    <h4>Dynamic Web App Scan (DAST)</h4>
+                    <p>Actively crawls live web endpoints, injecting parameter fuzzers to detect reflected XSS, SQL error leakage, and missing security headers (CSP, HSTS, X-Frame-Options).</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bento-card card-span-2 highlight-bento">
+                    <div class="card-icon-wrap">🤖</div>
+                    <h4>Dual-Tier AI Hardening & Auto-Fix</h4>
+                    <p>Evaluates finding severity with Mistral Cloud or local Ollama. Includes built-in API rate limiting, 429 exponential backoff, and direct 1-click AST code rewrite capabilities.</p>
+                    <div class="card-tags">
+                        <span>Rate Limiting Built-in</span>
+                        <span>Exponential Backoff</span>
+                        <span>BYOK Unrestricted</span>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="bento-card">
+                    <div class="card-icon-wrap">📊</div>
+                    <h4>Multi-Format Reporting</h4>
+                    <p>Export scan results in **Markdown** (for GitHub PR comments), **SARIF v2.1.0** (for GitHub Security tab), **JSON**, or interactive **HTML** dashboards.</p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="bento-card">
+                    <div class="card-icon-wrap">🚀</div>
+                    <h4>CI/CD & Pre-Commit Ready</h4>
+                    <p>Automate pipeline governance with `--ci`, severity threshold gates (`--fail-on critical,high`), and pre-commit hooks.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="card-icon">🕸️</div>
-                <h4>Dynamic Analysis (DAST)</h4>
-                <p>Crawls live web apps to test routes for parameter injection vulnerabilities and missing headers (CSP, HSTS, X-Frame-Options).</p>
+        </section>
+
+        <!-- CLI Commands & Quickstart Section -->
+        <section id="cli-quickstart" class="section cli-section">
+            <div class="section-header">
+                <div class="section-tag">DEVELOPER CHEAT SHEET</div>
+                <h2>CLI Commands & Usage</h2>
+                <p class="section-subtitle">
+                    Common commands to scan, auto-fix, export reports, and initialize CI/CD workflows.
+                </p>
             </div>
-            <div class="feature-card highlight-card">
-                <div class="card-icon">🤖</div>
-                <h4>Dual-Tier AI Engine</h4>
-                <p>Built-in Mistral AI with request pacing and exponential backoff retry out-of-the-box, or add your key for unrestricted speed.</p>
+
+            <div class="cli-table-container">
+                <table class="cli-table">
+                    <thead>
+                        <tr>
+                            <th>Goal</th>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Standard Scan</strong></td>
+                            <td><code>sentinel scan .</code></td>
+                            <td>Scans project with built-in rate-limited AI assistance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Unrestricted AI</strong></td>
+                            <td><code>sentinel scan . --ai-api-key &lt;key&gt;</code></td>
+                            <td>Runs with your personal Mistral key at full unrestricted speed</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom AI Model</strong></td>
+                            <td><code>sentinel scan . --ai-model codestral-latest</code></td>
+                            <td>Uses designated cloud model (e.g. Codestral or Mistral-Small)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom Rate Limit</strong></td>
+                            <td><code>sentinel scan . --ai-rate-limit 2.0</code></td>
+                            <td>Controls requests-per-second limit to match your quota</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Generate PR Bot</strong></td>
+                            <td><code>sentinel init --github-action</code></td>
+                            <td>Creates <code>.github/workflows/sentinel.yml</code> ready for PR comments</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Export Markdown</strong></td>
+                            <td><code>sentinel scan . --output-format markdown</code></td>
+                            <td>Exports GitHub-flavored Markdown report for CI step summary</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DAST Live Audit</strong></td>
+                            <td><code>sentinel scan --dast https://myapp.dev</code></td>
+                            <td>Crawls and audits a live web application</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Interactive Fixes</strong></td>
+                            <td><code>sentinel scan . --fix</code></td>
+                            <td>Prompts interactively to apply safe auto-fixes for each flaw</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="feature-card">
-                <div class="card-icon">⚙️</div>
-                <h4>Advanced CLI & Workflows</h4>
-                <p>Bootstrap projects with `sentinel init` or generate automated PR Bot workflows with `sentinel init --github-action`.</p>
+        </section>
+
+        <!-- Final CTA Banner -->
+        <section class="cta-section">
+            <div class="cta-card">
+                <h2>Secure Your Repository in Seconds</h2>
+                <p>Install Sentinel via PyPI or Docker and harden your applications today.</p>
+                <div class="cta-buttons">
+                    <a href="https://github.com/ronaldgosso/sentinel" class="btn btn-primary btn-lg" id="footer-get-started">Get Started on GitHub</a>
+                    <a href="#playground" class="btn btn-secondary btn-lg">Try Interactive Demo</a>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="card-icon">🚀</div>
-                <h4>GitHub PR Bot & Reporting</h4>
-                <p>Post interactive Markdown reports to PR comments, populate GitHub Job Summaries, and upload SARIF to GitHub Code Scanning.</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <span class="logo-shield">🛡️</span>
+                <span class="logo-text">Sentinel</span>
+                <p>AI-Powered Security Hardening for Modern Developers.</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-col">
+                    <strong>Project</strong>
+                    <a href="https://github.com/ronaldgosso/sentinel">GitHub Repository</a>
+                    <a href="https://pypi.org/project/sentinel-scanner/">PyPI Distribution</a>
+                    <a href="https://github.com/ronaldgosso/sentinel/pkgs/container/sentinel">Docker Image</a>
+                </div>
+                <div class="footer-col">
+                    <strong>Documentation</strong>
+                    <a href="#dual-tier-ai">Dual-Tier AI</a>
+                    <a href="#github-bot">GitHub PR Bot</a>
+                    <a href="#cli-quickstart">CLI Commands</a>
+                </div>
+                <div class="footer-col">
+                    <strong>Community</strong>
+                    <a href="https://github.com/ronaldgosso/sentinel/issues">Issues & Feedback</a>
+                    <a href="https://github.com/ronaldgosso/sentinel/blob/main/CONTRIBUTING.md">Contributing</a>
+                    <a href="https://github.com/ronaldgosso/sentinel/blob/main/LICENSE">GPLv3 License</a>
+                </div>
             </div>
         </div>
-    </section>
-
-    <section id="how-it-works" class="how-it-works">
-        <h2>How It Works</h2>
-        <div class="diagram">
-            <div class="step">
-                <div class="step-num">1</div>
-                <div class="step-content">Scan Directory</div>
-            </div>
-            <div class="arrow">→</div>
-            <div class="step">
-                <div class="step-num">2</div>
-                <div class="step-content">Local AST & SCA Cache Checks</div>
-            </div>
-            <div class="arrow">→</div>
-            <div class="step highlight-step">
-                <div class="step-num">3</div>
-                <div class="step-content">AI Triage (Mistral/Ollama)</div>
-            </div>
-            <div class="arrow">→</div>
-            <div class="step">
-                <div class="step-num">4</div>
-                <div class="step-content">Interactive TUI Auto-Fix</div>
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Sentinel Project &bull; Open Source under GPL-3.0 License &bull; Created with ❤️ for developers.</p>
         </div>
-    </section>
-
-    <section class="ci-cd">
-        <h2>Seamless CI/CD Integration</h2>
-        <p>Integrate Sentinel into your dev flow using PyPI, Docker containers, or our official GitHub Action.</p>
-        <div class="badges-row">
-            <img src="https://github.com/ronaldgosso/sentinel/workflows/CI/badge.svg" alt="CI Status">
-            <img src="https://img.shields.io/badge/Docker-ghcr.io-blue?logo=docker" alt="Docker Badge">
-            <img src="https://badge.fury.io/py/sentinel-scanner.svg" alt="PyPI Badge">
-        </div>
-        <br><br>
-        <a href="https://github.com/ronaldgosso/sentinel" class="btn outline" id="ci-setup-guide">View Integration Guide</a>
-    </section>
-
-    <footer>
-        <p>&copy; 2026 Sentinel Project &bull; Open Source under GPLv3 License &bull; <a href="https://github.com/ronaldgosso/sentinel" id="footer-github-link">GitHub Repository</a></p>
     </footer>
 
     <script src="script.js"></script>
