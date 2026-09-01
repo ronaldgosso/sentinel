@@ -12,7 +12,7 @@ from rich.table import Table
 from ... import __version__
 from ...ai.enricher import AIEnricher
 from ...fixer.engine import apply_fix
-from ...report.formatters import to_html, to_json, to_sarif
+from ...report.formatters import to_html, to_json, to_markdown, to_sarif
 from ...scanners.dast.engine import DASTScanner
 from ...scanners.sast.engine import SASTScanner
 from ...scanners.sca.engine import SCAScanner
@@ -46,7 +46,16 @@ def run_scan(
 @click.option(
     "--ai-backend", type=click.Choice(["local", "cloud"]), default="cloud", help="AI backend"
 )
-@click.option("--ai-api-key", help="Mistral API key (optional, overrides env)")
+@click.option("--ai-api-key", help="Mistral API key (optional, overrides default key/env)")
+@click.option(
+    "--ai-rate-limit",
+    type=float,
+    default=None,
+    help="AI requests per second limit (default: 1.0 for default key, unrestricted for custom key)",
+)
+@click.option(
+    "--ai-model", help="AI model override (e.g. mistral-small-latest or mistral:7b-instruct)"
+)
 @click.option("--ci", is_flag=True, help="CI mode – non-interactive, exit with code")
 @click.option("--skip-sast", is_flag=True, help="Skip SAST scanning")
 @click.option("--skip-sca", is_flag=True, help="Skip SCA scanning")
@@ -57,7 +66,9 @@ def run_scan(
     help="Apply auto-fixes (interactive) or in CI mode apply all possible fixes",
 )
 @click.option(
-    "--output-format", type=click.Choice(["json", "sarif", "html"]), help="Export report format"
+    "--output-format",
+    type=click.Choice(["json", "sarif", "html", "markdown", "md"]),
+    help="Export report format",
 )
 @click.option("--output-file", help="Output file for report (default: sentinel-report.<format>)")
 @click.option(
@@ -71,6 +82,8 @@ def scan(
     ai: bool,
     ai_backend: str,
     ai_api_key: str | None,
+    ai_rate_limit: float | None,
+    ai_model: str | None,
     ci: bool,
     skip_sast: bool,
     skip_sca: bool,
@@ -101,7 +114,12 @@ def scan(
         console.print("[yellow]CI mode – running non-interactive scan.[/]")
         combined = run_scan(path, skip_sast=skip_sast, skip_sca=skip_sca, dast_url=dast)
         if ai:
-            enricher = AIEnricher(api_key=ai_api_key, use_local=(ai_backend == "local"))
+            enricher = AIEnricher(
+                api_key=ai_api_key,
+                use_local=(ai_backend == "local"),
+                rate_limit=ai_rate_limit,
+                model=ai_model,
+            )
             combined = enricher.enrich(combined)
         # Optionally apply fixes in CI mode (with --fix)
         if fix:
@@ -110,13 +128,16 @@ def scan(
         # Export if requested
         if output_format:
             fmt = output_format
-            out_file = output_file or f"sentinel-report.{fmt}"
+            ext = "md" if fmt in ("markdown", "md") else fmt
+            out_file = output_file or f"sentinel-report.{ext}"
             if fmt == "json":
                 to_json(combined, Path(out_file))
             elif fmt == "sarif":
                 to_sarif(combined, Path(out_file))
             elif fmt == "html":
                 to_html(combined, Path(out_file))
+            elif fmt in ("markdown", "md"):
+                to_markdown(combined, Path(out_file))
             console.print(f"[green]Report saved to {out_file}[/]")
         # Check severity threshold
         fail_severities = [k for k, v in sev_order.items() if v >= threshold]
@@ -151,7 +172,12 @@ def scan(
 
         if ai and combined:
             ai_task = progress.add_task("[magenta]AI: Mistral analysing findings...", total=None)
-            enricher = AIEnricher(api_key=ai_api_key, use_local=(ai_backend == "local"))
+            enricher = AIEnricher(
+                api_key=ai_api_key,
+                use_local=(ai_backend == "local"),
+                rate_limit=ai_rate_limit,
+                model=ai_model,
+            )
             combined = enricher.enrich(combined)
             progress.update(ai_task, completed=True)
 
@@ -243,13 +269,16 @@ def scan(
             # Export if requested
             if output_format:
                 fmt = output_format
-                out_file = output_file or f"sentinel-report.{fmt}"
+                ext = "md" if fmt in ("markdown", "md") else fmt
+                out_file = output_file or f"sentinel-report.{ext}"
                 if fmt == "json":
                     to_json(combined, Path(out_file))
                 elif fmt == "sarif":
                     to_sarif(combined, Path(out_file))
                 elif fmt == "html":
                     to_html(combined, Path(out_file))
+                elif fmt in ("markdown", "md"):
+                    to_markdown(combined, Path(out_file))
                 console.print(f"[green]Report saved to {out_file}[/]")
             console.print("[bold]👋 Goodbye! Stay secure.[/]")
             break

@@ -1,24 +1,43 @@
-document.getElementById('copy-btn').addEventListener('click', function() {
-    navigator.clipboard.writeText('pip install sentinel-scanner');
-    this.innerText = 'Copied!';
-    setTimeout(() => this.innerText = 'Copy', 2000);
-});
+// Copy Button Handler for pip install
+const copyBtn = document.getElementById('copy-btn');
+const copyLabel = document.getElementById('copy-label');
 
+if (copyBtn) {
+    copyBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText('pip install sentinel-scanner');
+        copyLabel.innerText = 'Copied!';
+        setTimeout(() => copyLabel.innerText = 'Copy', 2000);
+    });
+}
+
+// Copy Button Handler for sentinel init --github-action
+const copyInitBtn = document.getElementById('copy-init-btn');
+if (copyInitBtn) {
+    copyInitBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText('sentinel init --github-action');
+        this.innerText = 'Copied!';
+        setTimeout(() => this.innerText = 'Copy', 2000);
+    });
+}
+
+// Interactive Terminal Typing Animation with Dual-Tier AI & Live Scans
 const terminalLines = [
-    '<span style="color: #c9d1d9;">$ sentinel scan .</span>',
-    '<span style="color: #8b949e;">[+] Starting SAST scan...</span>',
-    '<span style="color: #ff7b72;">[!] Found SQL Injection in db.py:42</span>',
-    '<span style="color: #8b949e;">[+] Sending finding to Mistral AI...</span>',
-    '<span style="color: #00ff41;">[AI] Risk evaluated as HIGH.</span>',
-    '<span style="color: #58a6ff;">[AI] Suggestion: Use parameterized query.</span>',
-    '<span style="color: #c9d1d9;">Apply auto-fix? [y/N]: y</span>',
-    '<span style="color: #3fb950;">[+] Fix applied successfully to db.py.</span>'
+    '<span style="color: #60a5fa;">$ sentinel scan . --ai</span>',
+    '<span style="color: #94a3b8;">🔍 Sentinel v1.0.12 – AI-Powered Security Hardening</span>',
+    '<span style="color: #eab308;">ℹ️ Using default Sentinel AI key (1.0 req/s pacing).</span>',
+    '<span style="color: #38bdf8;">[1/3] SAST: AST analysis of Python & TypeScript...</span>',
+    '<span style="color: #ef4444;">🔴 Critical: SQL Injection found in auth/login.py:42</span>',
+    '<span style="color: #f59e0b;">🟠 High: Hardcoded Secret found in config/db.py:5</span>',
+    '<span style="color: #a855f7;">🤖 AI (Mistral): Evaluating exploit scenarios & fixes...</span>',
+    '<span style="color: #10b981;">✅ AI Verified: Attack path confirmed (CWE-89).</span>',
+    '<span style="color: #e2e8f0;">Apply auto-hardening fix to auth/login.py? [y/N]: </span><span style="color: #10b981;">y</span>',
+    '<span style="color: #10b981;">✨ Applied parameterized query auto-fix successfully!</span>'
 ];
 
 const terminalElement = document.getElementById('terminal-typing');
 let currentLine = 0;
 
-// Add a cursor style element to document head dynamically
+// Cursor animation
 const cursorStyle = document.createElement('style');
 cursorStyle.innerHTML = `
     @keyframes terminal-blink {
@@ -29,7 +48,7 @@ cursorStyle.innerHTML = `
         display: inline-block;
         width: 8px;
         height: 15px;
-        background-color: var(--accent-cyan, #00f0ff);
+        background-color: var(--accent-cyan, #06b6d4);
         margin-left: 4px;
         vertical-align: middle;
         animation: terminal-blink 1s infinite;
@@ -38,119 +57,124 @@ cursorStyle.innerHTML = `
 document.head.appendChild(cursorStyle);
 
 function typeLine() {
-    // Remove previous cursor
+    if (!terminalElement) return;
+
     const oldCursor = terminalElement.querySelector('.terminal-cursor');
-    if (oldCursor) {
-        oldCursor.remove();
-    }
+    if (oldCursor) oldCursor.remove();
 
     if (currentLine < terminalLines.length) {
         terminalElement.innerHTML += terminalLines[currentLine] + '<br>';
         currentLine++;
         
-        // If there's another line, add the cursor
         if (currentLine < terminalLines.length) {
             terminalElement.innerHTML += '<span class="terminal-cursor"></span>';
         }
         
-        let delay = Math.random() * 300 + 150;
-        // Adjust delay depending on action to feel organic
-        if (currentLine === 1 || currentLine === 7) {
-            // Typing commands / user inputs takes a bit longer
-            delay = 800;
-        } else if (currentLine === 2 || currentLine === 8) {
-            // Scanning outputs are fast
-            delay = 300;
+        let delay = Math.random() * 250 + 120;
+        if (currentLine === 1 || currentLine === 8) {
+            delay = 700;
+        } else if (currentLine === 6) {
+            delay = 900; // Simulating AI response time
         }
         
         setTimeout(typeLine, delay);
     }
 }
 
-setTimeout(typeLine, 800);
+setTimeout(typeLine, 600);
 
 // Interactive Playground Data
 const vulnData = {
     sqli: {
         title: "SQL Injection (CWE-89)",
-        desc: "Concatenating untrusted user inputs directly into SQL query strings.",
-        remediation: "Protocol: Parameterized Queries. Replace string concatenation or formatting inside SQL executions with placeholders and pass query parameters as a tuple. Example: Change cursor.execute(f'SELECT * FROM users WHERE username = \"{user}\"') to cursor.execute('SELECT * FROM users WHERE username = ?', (user,)).",
-        vulnCode: `# Unsafe SQL Construction
-def get_user(user_id):
-    query = f"SELECT * FROM users WHERE id = {user_id}"
+        badge: "OWASP Top 10 — Critical",
+        desc: "Concatenating untrusted user inputs directly into SQL query strings, allowing attackers to execute arbitrary database queries.",
+        remediation: "Protocol: Parameterized Queries. Replace string concatenation with database driver placeholders (?, %s, :val) and pass variables as parameterized tuples. Never format raw strings into execute().",
+        vulnCode: `# Unsafe SQL String Interpolation
+def get_user(username):
+    query = f"SELECT * FROM users WHERE username = '{username}'"
     return db.execute(query)`,
-        fixedCode: `# Safe Parameterized Query
-def get_user(user_id):
-    query = "SELECT * FROM users WHERE id = ?"
-    return db.execute(query, (user_id,))`
+        fixedCode: `# Safe Parameterized Query (Auto-Fix)
+def get_user(username: str):
+    query = "SELECT * FROM users WHERE username = ?"
+    return db.execute(query, (username,))`
     },
     xss: {
         title: "Cross-Site Scripting (CWE-79)",
-        desc: "Rendering untrusted user inputs in HTML templates or outputs without escaping.",
-        remediation: "Protocol: Output Encoding & Context-Aware Escaping. Remove raw rendering filters like '|safe' or 'mark_safe()' for user-controlled inputs. Always HTML-escape variables using template engine auto-escaping (e.g. Jinja/Django default) or escape values explicitly using python's 'html.escape()' module.",
-        vulnCode: `<!-- Unsafe Raw Rendering -->
-<div>
-    <h3>User Comments:</h3>
-    <p>{{ user_input | safe }}</p>
+        badge: "OWASP Top 10 — High",
+        desc: "Rendering unescaped user inputs directly in HTML templates or browser DOM, permitting malicious JavaScript execution.",
+        remediation: "Protocol: Output Encoding & Auto-Escaping. Avoid raw rendering filters like '|safe' or 'dangerouslySetInnerHTML'. Ensure HTML auto-escaping is active or sanitize inputs using DOMPurify / html.escape().",
+        vulnCode: `<!-- Unsafe Raw Template Rendering -->
+<div class="user-bio">
+    <h3>User Profile:</h3>
+    <p>{{ user_bio | safe }}</p>
 </div>`,
-        fixedCode: `<!-- Safe Escaped Rendering -->
-<div>
-    <h3>User Comments:</h3>
-    <p>{{ user_input | escape }}</p>
+        fixedCode: `<!-- Safe Escaped Rendering (Auto-Fix) -->
+<div class="user-bio">
+    <h3>User Profile:</h3>
+    <p>{{ user_bio | escape }}</p>
 </div>`
     },
     cmd: {
         title: "Command Injection (CWE-78)",
-        desc: "Executing OS commands via subprocess calls with dynamic strings and shell=True.",
-        remediation: "Protocol: Argument Separation. Set 'shell=False' in subprocess execution calls (such as subprocess.run, call, Popen). Pass commands and arguments as a list of strings rather than a single interpolated command string. Example: Change subprocess.run(f'ping -c 1 {ip}', shell=True) to subprocess.run(['ping', '-c', '1', ip], shell=False).",
-        vulnCode: `# Unsafe Shell execution
-def ping_host(ip):
-    return subprocess.run(f"ping -c 1 {ip}", shell=True)`,
-        fixedCode: `# Safe List-based Argument execution
-def ping_host(ip):
-    return subprocess.run(["ping", "-c", "1", ip], shell=False)`
+        badge: "Critical Exploit Risk",
+        desc: "Executing operating system shell commands with user-supplied arguments and shell=True, giving attackers shell execution.",
+        remediation: "Protocol: Argument Separation. Set shell=False in subprocess execution calls (run, Popen, check_output). Pass command names and flags as a list of separate strings.",
+        vulnCode: `# Unsafe Shell Execution
+import subprocess
+
+def ping_host(host_ip):
+    return subprocess.run(f"ping -c 1 {host_ip}", shell=True)`,
+        fixedCode: `# Safe List-Based Execution (Auto-Fix)
+import subprocess
+
+def ping_host(host_ip: str):
+    return subprocess.run(["ping", "-c", "1", host_ip], shell=False)`
     },
     secrets: {
         title: "Hardcoded Secrets (CWE-798)",
-        desc: "Storing passwords, API tokens, keys, and private credentials directly inside source code.",
-        remediation: "Protocol: Externalized Configuration. Remove plain-text credentials, API keys, and tokens from the source code. Save them to a local '.env' file (which must be added to your '.gitignore') and load them dynamically using python-dotenv. Access them via environment variables: os.getenv('VARIABLE_NAME').",
-        vulnCode: `# Hardcoded plain-text API Key
-API_KEY = "sk-proj-47A1B39D4C2F89"`,
-        fixedCode: `# Safe Environment Variable Load
+        badge: "Credential Leak",
+        desc: "Storing plain-text API keys, passwords, and private tokens directly inside source code repositories.",
+        remediation: "Protocol: Externalized Secrets. Move API keys to local '.env' configuration files added to '.gitignore'. Load credentials dynamically via python-dotenv / os.getenv().",
+        vulnCode: `# Hardcoded Plain-Text Key
+MISTRAL_API_KEY = "21st_sk_4f88e05a718167041182d13"`,
+        fixedCode: `# Secure Environment Variable Loading (Auto-Fix)
 import os
-API_KEY = os.getenv("MISTRAL_API_KEY")`
+MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")`
     },
     crypto: {
         title: "Insecure Cryptography (CWE-326)",
-        desc: "Utilizing weak or deprecated hashing algorithms (like MD5 or SHA-1) and weak ciphers.",
-        remediation: "Protocol: Strong Cryptographic Standards. Replace weak, collision-prone hash algorithms (MD5, SHA-1, SHA-0) with secure hashes (SHA-256, SHA-3, or bcrypt for passwords). For symmetric encryption, replace insecure ciphers (DES, RC4) with AES-GCM (e.g., using python's cryptography package) or ChaCha20-Poly1305.",
+        badge: "Weak Cipher Risk",
+        desc: "Utilizing broken or collision-vulnerable hash algorithms (MD5, SHA-1) and weak ciphers (DES, RC4).",
+        remediation: "Protocol: Modern Cryptographic Standards. Upgrade hash routines to SHA-256 / SHA-3 or bcrypt for passwords. Use authenticated ciphers like AES-GCM or ChaCha20-Poly1305.",
         vulnCode: `# Deprecated Insecure Hashing
 import hashlib
-def hash_password(password):
-    return hashlib.md5(password.encode()).hexdigest()`,
-        fixedCode: `# Secure Cryptographic Standard
+
+def hash_token(token):
+    return hashlib.md5(token.encode()).hexdigest()`,
+        fixedCode: `# Secure SHA-256 Hashing (Auto-Fix)
 import hashlib
-def hash_password(pwd: str):
-    return hashlib.sha256(pwd.encode()).hexdigest()`
+
+def hash_token(token: str) -> str:
+    return hashlib.sha256(token.encode('utf-8')).hexdigest()`
     },
     frontend: {
-        title: "Frontend Security Risks (CWE-79 & CWE-1022)",
-        desc: "Unsafe React/JSX HTML rendering (dangerouslySetInnerHTML) and lack of sandboxing on iframes.",
-        remediation: "Protocol: Secure Frontend Practices. Avoid rendering raw HTML (e.g., dangerouslySetInnerHTML, v-html). If necessary, sanitize input using DOMPurify. Avoid 'eval' or string-based timeouts. Use rel='noopener noreferrer' when using target='_blank'. Use sandboxed iframes. Do not use javascript: URIs or inline scripts and event handlers.",
-        vulnCode: `<!-- Unsafe dangerouslySetInnerHTML and Un-sandboxed iframe -->
+        title: "Frontend & DOM XSS (CWE-79 & CWE-1022)",
+        badge: "Client-Side Security",
+        desc: "Un-sanitized DOM injections (dangerouslySetInnerHTML) and un-sandboxed iframe tags enabling clickjacking/XSS.",
+        remediation: "Protocol: Client-Side Hardening. Sanitize rich HTML using DOMPurify. Always add sandbox='allow-scripts' to iframes and rel='noopener noreferrer' to external links.",
+        vulnCode: `<!-- Unsafe dangerouslySetInnerHTML & Un-sandboxed iframe -->
 <div dangerouslySetInnerHTML={{ __html: userInput }} />
-
-<iframe src="https://example.com/embed"></iframe>`,
-        fixedCode: `<!-- Safe Sanitized HTML rendering and Sandboxed iframe -->
+<iframe src="https://untrusted-site.com/embed"></iframe>`,
+        fixedCode: `<!-- Hardened DOMPurify & Sandboxed iframe (Auto-Fix) -->
 import DOMPurify from 'dompurify';
-const cleanHtml = DOMPurify.sanitize(userInput);
-<div dangerouslySetInnerHTML={{ __html: cleanHtml }} />
 
-<iframe sandbox="allow-scripts" src="https://example.com/embed"></iframe>`
+<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(userInput) }} />
+<iframe sandbox="allow-scripts" src="https://untrusted-site.com/embed"></iframe>`
     }
 };
 
-// Playground interactions
+// Playground Interactions
 let activeVuln = 'sqli';
 const tabs = document.querySelectorAll('.pg-tab');
 const fixBtn = document.getElementById('fix-btn');
@@ -158,42 +182,52 @@ const blurOverlay = document.getElementById('blur-overlay');
 const codeFixed = document.getElementById('code-fixed');
 
 function selectVuln(vulnKey) {
+    if (!vulnData[vulnKey]) return;
     activeVuln = vulnKey;
     const data = vulnData[vulnKey];
     
-    // Update active tab class
+    // Update active tab class & aria-selected
     tabs.forEach(tab => {
-        if (tab.getAttribute('data-vuln') === vulnKey) {
-            tab.classList.add('active');
-        } else {
-            tab.classList.remove('active');
-        }
+        const isCurrent = tab.getAttribute('data-vuln') === vulnKey;
+        tab.classList.toggle('active', isCurrent);
+        tab.setAttribute('aria-selected', isCurrent ? 'true' : 'false');
     });
     
     // Update texts
-    document.getElementById('vuln-title').innerText = data.title;
-    document.getElementById('vuln-desc').innerText = data.desc;
-    document.getElementById('vuln-remediation').innerText = data.remediation;
-    document.getElementById('code-vuln').innerText = data.vulnCode;
+    const titleEl = document.getElementById('vuln-title');
+    const badgeEl = document.getElementById('vuln-badge');
+    const descEl = document.getElementById('vuln-desc');
+    const remEl = document.getElementById('vuln-remediation');
+    const vulnCodeEl = document.getElementById('code-vuln');
+    
+    if (titleEl) titleEl.innerText = data.title;
+    if (badgeEl) badgeEl.innerText = data.badge;
+    if (descEl) descEl.innerText = data.desc;
+    if (remEl) remEl.innerText = data.remediation;
+    if (vulnCodeEl) vulnCodeEl.innerText = data.vulnCode;
     
     // Reset fixed code state
-    codeFixed.innerText = "# Click 'Apply Auto-Fix' to see secure code";
-    codeFixed.classList.remove('fixed-applied');
-    blurOverlay.style.display = 'flex';
+    if (codeFixed) {
+        codeFixed.innerText = "# Click 'Apply AI Auto-Fix' to see secure code";
+        codeFixed.classList.remove('fixed-applied');
+    }
+    if (blurOverlay) {
+        blurOverlay.style.display = 'flex';
+    }
 }
 
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-        selectVuln(tab.getAttribute('data-vuln'));
+        const key = tab.getAttribute('data-vuln');
+        if (key) selectVuln(key);
     });
 });
 
-fixBtn.addEventListener('click', () => {
-    // Hide overlay with a smooth transition
-    blurOverlay.style.display = 'none';
-    
-    // Render fixed code
-    const data = vulnData[activeVuln];
-    codeFixed.innerText = data.fixedCode;
-    codeFixed.classList.add('fixed-applied');
-});
+if (fixBtn && blurOverlay && codeFixed) {
+    fixBtn.addEventListener('click', () => {
+        blurOverlay.style.display = 'none';
+        const data = vulnData[activeVuln];
+        codeFixed.innerText = data.fixedCode;
+        codeFixed.classList.add('fixed-applied');
+    });
+}

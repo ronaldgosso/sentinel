@@ -31,12 +31,15 @@
 # Install
 pip install sentinel-scanner
 
-# Scan
+# Scan (Uses built-in AI key with 1.0 req/s rate limiting by default)
 sentinel scan .
 
-# With AI (get a free key from Mistral AI)
+# With your own Mistral AI key (Unrestricted speed)
 export MISTRAL_API_KEY=your-key
-sentinel scan . --ai
+sentinel scan .
+
+# Or pass custom key and rate limits directly via CLI
+sentinel scan . --ai-api-key your-key --ai-rate-limit 5.0
 ```
 
 For full documentation, visit [Sentinel Docs](https://ronaldgosso.github.io/sentinel).
@@ -72,14 +75,21 @@ Sentinel works fully out-of-the-box in offline mode. If no AI API key (Mistral) 
 
 ## GitHub Actions / CI/CD Workflows
 
-The repository uses automated GitHub Actions workflows to maintain code quality, build Docker images, publish PyPI releases, and host the documentation website:
+Sentinel can be added to any repository to run as an automated **GitHub Security Bot**. On every Pull Request or push, Sentinel scans the code, posts a rich Markdown report directly to the PR comments, adds a Job Summary in GitHub Actions, and uploads SARIF findings to GitHub Code Scanning.
+
+### Quick Setup:
+Generate the ready-to-use GitHub Action workflow in your project:
+```bash
+sentinel init --github-action
+```
 
 | Workflow | File | Trigger | Description |
 | :--- | :--- | :--- | :--- |
-| **Continuous Integration (CI)** | [ci.yml](.github/workflows/ci.yml) | Push/PR to `main` | Runs tests, Ruff (linting), and Mypy (type checking) to ensure code meets quality standards before merg[...]
-| **Publish to PyPI** | [pypi-publish.yml](.github/workflows/pypi-publish.yml) | Push tag `v*.*.*` | Runs quality checks first. If successful, builds wheels and publishes the distribution packages[...]
-| **Build & Publish Docker** | [docker-build.yml](.github/workflows/docker-build.yml) | Push to `main`, tags `v*`, or PyPI success | Automates building the optimized multi-stage Python wheel Docke[...]
-| **Deploy Docs** | [docs.yml](.github/workflows/docs.yml) | Push to `main` | Deploys static files from the `website/` folder directly to GitHub Pages at [https://ronaldgosso.github.io/sentinel](h[...]
+| **Sentinel Security Bot** | [sentinel.yml](.github/workflows/sentinel.yml) | Push/PR | Scans repository, outputs Markdown PR comment & Job Summary, and uploads SARIF security alerts |
+| **Continuous Integration (CI)** | [ci.yml](.github/workflows/ci.yml) | Push/PR to `main` | Runs tests, Ruff (linting), and Mypy (type checking) to ensure code meets quality standards before merging |
+| **Publish to PyPI** | [pypi-publish.yml](.github/workflows/pypi-publish.yml) | Push tag `v*.*.*` | Runs quality checks first. If successful, builds wheels and publishes the distribution packages |
+| **Build & Publish Docker** | [docker-build.yml](.github/workflows/docker-build.yml) | Push to `main`, tags `v*`, or PyPI success | Automates building the optimized multi-stage Python wheel Docker container |
+| **Deploy Docs** | [docs.yml](.github/workflows/docs.yml) | Push to `main` | Deploys static files from the `website/` folder directly to GitHub Pages |
 
 ---
 

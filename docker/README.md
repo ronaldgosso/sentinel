@@ -10,9 +10,11 @@ You can run Sentinel using Docker by mounting your project directory into the co
 docker run --rm -v $(pwd):/app ghcr.io/ronaldgosso/sentinel:latest scan .
 ```
 
-### Passing Environment Variables
+### AI Assistance (Dual-Tier Access & Rate Limiting)
 
-To enable the Mistral AI backend for intelligent auto-fixes, pass your API key as an environment variable:
+Sentinel includes **built-in AI assistance** by default (rate-limited to 1.0 req/s with automatic retry backoff).
+
+To use your own Mistral AI key for **unrestricted speed**:
 
 ```bash
 docker run --rm \
@@ -21,11 +23,24 @@ docker run --rm \
   ghcr.io/ronaldgosso/sentinel:latest scan . --ai
 ```
 
+You can also customize the client rate limit via `--ai-rate-limit`:
+```bash
+docker run --rm \
+  -v $(pwd):/app \
+  ghcr.io/ronaldgosso/sentinel:latest scan . --ai-rate-limit 2.0
+```
+
 ### Exporting Reports
 
-If you specify an output file for reports, the file will be saved in your mounted workspace directory.
+Sentinel supports exporting findings in **JSON**, **SARIF**, **HTML**, and **Markdown** (for GitHub Action PR summaries and comments).
 
 ```bash
+# Export Markdown report
+docker run --rm \
+  -v $(pwd):/app \
+  ghcr.io/ronaldgosso/sentinel:latest scan . --output-format markdown --output-file /app/sentinel-report.md
+
+# Export SARIF for GitHub Code Scanning
 docker run --rm \
   -v $(pwd):/app \
   ghcr.io/ronaldgosso/sentinel:latest scan . --output-format sarif --output-file /app/sentinel-report.sarif
