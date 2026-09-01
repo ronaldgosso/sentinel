@@ -46,7 +46,16 @@ def run_scan(
 @click.option(
     "--ai-backend", type=click.Choice(["local", "cloud"]), default="cloud", help="AI backend"
 )
-@click.option("--ai-api-key", help="Mistral API key (optional, overrides env)")
+@click.option("--ai-api-key", help="Mistral API key (optional, overrides default key/env)")
+@click.option(
+    "--ai-rate-limit",
+    type=float,
+    default=None,
+    help="AI requests per second limit (default: 1.0 for default key, unrestricted for custom key)",
+)
+@click.option(
+    "--ai-model", help="AI model override (e.g. mistral-small-latest or mistral:7b-instruct)"
+)
 @click.option("--ci", is_flag=True, help="CI mode – non-interactive, exit with code")
 @click.option("--skip-sast", is_flag=True, help="Skip SAST scanning")
 @click.option("--skip-sca", is_flag=True, help="Skip SCA scanning")
@@ -71,6 +80,8 @@ def scan(
     ai: bool,
     ai_backend: str,
     ai_api_key: str | None,
+    ai_rate_limit: float | None,
+    ai_model: str | None,
     ci: bool,
     skip_sast: bool,
     skip_sca: bool,
@@ -101,7 +112,12 @@ def scan(
         console.print("[yellow]CI mode – running non-interactive scan.[/]")
         combined = run_scan(path, skip_sast=skip_sast, skip_sca=skip_sca, dast_url=dast)
         if ai:
-            enricher = AIEnricher(api_key=ai_api_key, use_local=(ai_backend == "local"))
+            enricher = AIEnricher(
+                api_key=ai_api_key,
+                use_local=(ai_backend == "local"),
+                rate_limit=ai_rate_limit,
+                model=ai_model,
+            )
             combined = enricher.enrich(combined)
         # Optionally apply fixes in CI mode (with --fix)
         if fix:
@@ -151,7 +167,12 @@ def scan(
 
         if ai and combined:
             ai_task = progress.add_task("[magenta]AI: Mistral analysing findings...", total=None)
-            enricher = AIEnricher(api_key=ai_api_key, use_local=(ai_backend == "local"))
+            enricher = AIEnricher(
+                api_key=ai_api_key,
+                use_local=(ai_backend == "local"),
+                rate_limit=ai_rate_limit,
+                model=ai_model,
+            )
             combined = enricher.enrich(combined)
             progress.update(ai_task, completed=True)
 

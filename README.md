@@ -31,12 +31,15 @@
 # Install
 pip install sentinel-scanner
 
-# Scan
+# Scan (Uses built-in AI key with 1.0 req/s rate limiting by default)
 sentinel scan .
 
-# With AI (get a free key from Mistral AI)
+# With your own Mistral AI key (Unrestricted speed)
 export MISTRAL_API_KEY=your-key
-sentinel scan . --ai
+sentinel scan .
+
+# Or pass custom key and rate limits directly via CLI
+sentinel scan . --ai-api-key your-key --ai-rate-limit 5.0
 ```
 
 For full documentation, visit [Sentinel Docs](https://ronaldgosso.github.io/sentinel).

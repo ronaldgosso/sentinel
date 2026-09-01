@@ -42,8 +42,19 @@ def get_finding_hash(finding: dict[str, Any]) -> str:
 
 
 class AIEnricher:
-    def __init__(self, api_key: str | None = None, use_local: bool = False) -> None:
-        self.client = AIClient(api_key=api_key, use_local=use_local)
+    def __init__(
+        self,
+        api_key: str | None = None,
+        use_local: bool = False,
+        rate_limit: float | None = None,
+        model: str | None = None,
+    ) -> None:
+        self.client = AIClient(
+            api_key=api_key,
+            use_local=use_local,
+            rate_limit=rate_limit,
+            model=model,
+        )
         self.available = self.client.is_available()
         init_cache()
         if not self.available:
@@ -53,6 +64,19 @@ class AIEnricher:
                 console.print(
                     "[yellow]⚠️ No Mistral API key found. Set MISTRAL_API_KEY or use --ai-api-key.[/]"
                 )
+        else:
+            if not use_local:
+                if self.client.is_custom_key:
+                    console.print("[green]✨ Using custom Mistral API key (Unrestricted speed).[/]")
+                else:
+                    rate_str = (
+                        f"{self.client.effective_rate_limit} req/s"
+                        if self.client.effective_rate_limit
+                        else "rate-limited"
+                    )
+                    console.print(
+                        f"[yellow]ℹ️ Using default Sentinel AI key ({rate_str}). Set MISTRAL_API_KEY or use --ai-api-key for unrestricted speed.[/]"
+                    )
 
     def enrich(self, findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Enrich each finding with AI analysis."""
