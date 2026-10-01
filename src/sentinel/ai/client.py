@@ -9,9 +9,6 @@ from .rate_limiter import RateLimiter
 
 console = Console()
 
-DEFAULT_MISTRAL_API_KEY = "tGBWwpZqi2CZUns8r0Y7ANAEEYypNtx5"
-
-
 class AIClient:
     """Client for interacting with Mistral (local Ollama or cloud API)."""
 
@@ -35,7 +32,7 @@ class AIClient:
             self.api_key = str(configured_key)
             self.is_custom_key = True
         else:
-            self.api_key = DEFAULT_MISTRAL_API_KEY
+            self.api_key = None
             self.is_custom_key = False
 
         self.use_local = use_local
@@ -51,13 +48,13 @@ class AIClient:
         self.timeout = 30.0
 
         # Determine rate limiting:
-        # If rate_limit is explicitly passed, use it.
-        # Otherwise: if using default key, default to 1.0 req/s. If custom key, unrestricted (None).
         if rate_limit is not None:
             self.effective_rate_limit: float | None = rate_limit
-        elif not self.is_custom_key:
-            env_limit = os.getenv("MISTRAL_RATE_LIMIT")
-            self.effective_rate_limit = float(env_limit) if env_limit else 1.0
+        elif os.getenv("MISTRAL_RATE_LIMIT"):
+            try:
+                self.effective_rate_limit = float(os.getenv("MISTRAL_RATE_LIMIT", ""))
+            except ValueError:
+                self.effective_rate_limit = None
         else:
             self.effective_rate_limit = None
 

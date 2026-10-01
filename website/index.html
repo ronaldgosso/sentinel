@@ -58,7 +58,7 @@
                     </h1>
                     
                     <p class="hero-description">
-                        Stop security vulnerabilities before they reach production. Sentinel scans SAST, SCA, and DAST across Python, JS/TS, and HTML, explains real exploit paths with built-in Mistral AI, and applies safe auto-fixes with 1 click.
+                        Stop security vulnerabilities before they reach production. Sentinel scans SAST, SCA, and DAST across Python, JS/TS, and HTML, explains real exploit paths with Mistral AI, and applies safe auto-fixes with 1 click.
                     </p>
                     
                     <div class="hero-actions">
@@ -138,48 +138,48 @@
                 <div class="section-tag">INTELLIGENT AI ENGINE</div>
                 <h2>Dual-Tier AI Architecture</h2>
                 <p class="section-subtitle">
-                    Enjoy built-in AI assistance with automatic rate limiting and exponential backoff retry, or bring your own Mistral key for unrestricted high-speed analysis.
+                    Connect your Mistral API key via CLI option or environment variable for cloud analysis, or run local Ollama for 100% offline privacy.
                 </p>
             </div>
 
             <div class="dual-tier-grid">
-                <!-- Tier 1: Default Key -->
+                <!-- Tier 1: Mistral Cloud AI -->
                 <div class="tier-card default-tier">
-                    <div class="tier-badge">OUT-OF-THE-BOX</div>
+                    <div class="tier-badge">CLOUD ASSISTANCE</div>
                     <div class="tier-icon">⚡</div>
-                    <h3>Default Community Tier</h3>
-                    <p class="tier-desc">Ready instantly with zero setup or registration. Uses Sentinel's embedded Mistral AI engine.</p>
+                    <h3>Mistral AI Cloud</h3>
+                    <p class="tier-desc">Provide your Mistral API key directly in CLI or via environment variable for vulnerability enrichment.</p>
                     
                     <ul class="tier-features">
-                        <li><span class="check">✓</span> <strong>Included by default:</strong> No API key needed</li>
-                        <li><span class="check">✓</span> <strong>Smart Rate Limiter:</strong> 1.0 req/s client pacing</li>
-                        <li><span class="check">✓</span> <strong>HTTP 429 Adaptive Backoff:</strong> Exponential retry & Retry-After support</li>
-                        <li><span class="check">✓</span> <strong>SQLite Local Cache:</strong> Zero repeated queries</li>
+                        <li><span class="check">✓</span> <strong>CLI Flag:</strong> Pass <code>--ai-api-key &lt;key&gt;</code> directly in CLI</li>
+                        <li><span class="check">✓</span> <strong>Environment Variable:</strong> Read seamlessly from <code>MISTRAL_API_KEY</code></li>
+                        <li><span class="check">✓</span> <strong>Adaptive Backoff:</strong> Exponential backoff & Retry-After on HTTP 429</li>
+                        <li><span class="check">✓</span> <strong>SQLite Local Cache:</strong> Zero repeated queries across scans</li>
                     </ul>
 
                     <div class="code-snippet-box">
                         <div class="snippet-label">Terminal Command</div>
-                        <code>sentinel scan .</code>
+                        <code>sentinel scan . --ai-api-key your-key</code>
                     </div>
                 </div>
 
-                <!-- Tier 2: Custom Key -->
+                <!-- Tier 2: Local AI (Ollama) -->
                 <div class="tier-card custom-tier highlight-tier">
-                    <div class="tier-badge popular-badge">UNRESTRICTED SPEED</div>
+                    <div class="tier-badge popular-badge">100% OFFLINE</div>
                     <div class="tier-icon">🚀</div>
-                    <h3>Bring Your Own Key (BYOK)</h3>
-                    <p class="tier-desc">Provide your personal Mistral API key for unthrottled maximum throughput and custom models.</p>
+                    <h3>Local AI (Ollama)</h3>
+                    <p class="tier-desc">Zero external API dependencies. Run models locally on your machine for complete security and privacy.</p>
                     
                     <ul class="tier-features">
-                        <li><span class="check">✓</span> <strong>Unrestricted Speed:</strong> Artificial rate limiting bypassed</li>
-                        <li><span class="check">✓</span> <strong>Custom Models:</strong> `mistral-small-latest`, `codestral-latest`, etc.</li>
-                        <li><span class="check">✓</span> <strong>Custom Pacing Option:</strong> `--ai-rate-limit <rps>`</li>
-                        <li><span class="check">✓</span> <strong>Local Backend:</strong> Fully offline with `--ai-backend local` (Ollama)</li>
+                        <li><span class="check">✓</span> <strong>Zero Cloud Calls:</strong> Data never leaves your machine</li>
+                        <li><span class="check">✓</span> <strong>Custom Local Models:</strong> `mistral:7b-instruct`, `codellama`, etc.</li>
+                        <li><span class="check">✓</span> <strong>Custom Pacing Option:</strong> `--ai-rate-limit &lt;rps&gt;`</li>
+                        <li><span class="check">✓</span> <strong>Local Backend:</strong> Instant local inference via `--ai-backend local`</li>
                     </ul>
 
                     <div class="code-snippet-box">
                         <div class="snippet-label">Terminal Command</div>
-                        <code>export MISTRAL_API_KEY=your-key<br>sentinel scan . --ai-model codestral-latest</code>
+                        <code>sentinel scan . --ai-backend local --ai-model mistral:7b-instruct</code>
                     </div>
                 </div>
             </div>
@@ -479,12 +479,12 @@ def get_user(user_id):
                         <tr>
                             <td><strong>Standard Scan</strong></td>
                             <td><code>sentinel scan .</code></td>
-                            <td>Scans project with built-in rate-limited AI assistance</td>
+                            <td>Scans project offline (SAST & SCA) with zero external dependencies</td>
                         </tr>
                         <tr>
-                            <td><strong>Unrestricted AI</strong></td>
+                            <td><strong>AI-Assisted Scan</strong></td>
                             <td><code>sentinel scan . --ai-api-key &lt;key&gt;</code></td>
-                            <td>Runs with your personal Mistral key at full unrestricted speed</td>
+                            <td>Enriches findings with Mistral AI explanations and remediation suggestions</td>
                         </tr>
                         <tr>
                             <td><strong>Custom AI Model</strong></td>

@@ -46,12 +46,15 @@ def run_scan(
 @click.option(
     "--ai-backend", type=click.Choice(["local", "cloud"]), default="cloud", help="AI backend"
 )
-@click.option("--ai-api-key", help="Mistral API key (optional, overrides default key/env)")
+@click.option(
+    "--ai-api-key",
+    help="Mistral API key for AI assistance (can also be set via MISTRAL_API_KEY env)",
+)
 @click.option(
     "--ai-rate-limit",
     type=float,
     default=None,
-    help="AI requests per second limit (default: 1.0 for default key, unrestricted for custom key)",
+    help="AI requests per second limit (optional)",
 )
 @click.option(
     "--ai-model", help="AI model override (e.g. mistral-small-latest or mistral:7b-instruct)"
@@ -171,15 +174,16 @@ def scan(
             progress.update(task, completed=True)
 
         if ai and combined:
-            ai_task = progress.add_task("[magenta]AI: Mistral analysing findings...", total=None)
             enricher = AIEnricher(
                 api_key=ai_api_key,
                 use_local=(ai_backend == "local"),
                 rate_limit=ai_rate_limit,
                 model=ai_model,
             )
-            combined = enricher.enrich(combined)
-            progress.update(ai_task, completed=True)
+            if enricher.available:
+                ai_task = progress.add_task("[magenta]AI: Mistral analysing findings...", total=None)
+                combined = enricher.enrich(combined)
+                progress.update(ai_task, completed=True)
 
     # Apply fixes if --fix is given (interactive)
     if fix and combined:

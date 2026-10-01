@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from sentinel.ai.client import DEFAULT_MISTRAL_API_KEY, AIClient
+from sentinel.ai.client import AIClient
 from sentinel.ai.enricher import AIEnricher, get_finding_hash
 from sentinel.ai.rate_limiter import RateLimiter
 
@@ -30,6 +30,15 @@ def test_enricher_mock(monkeypatch: pytest.MonkeyPatch) -> None:
     enriched = enricher.enrich(findings)
     assert enriched[0].get("ai_confirmed") is True
     assert "fix" in enriched[0]
+
+
+def test_enricher_unavailable_no_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
+    enricher = AIEnricher(api_key=None, use_local=False)
+    assert enricher.available is False
+    findings = [{"id": "test", "severity": "Medium", "location": "x.py"}]
+    enriched = enricher.enrich(findings)
+    assert enriched == findings
 
 
 # --- Rate Limiter Tests ---
@@ -72,16 +81,24 @@ def test_rate_limiter_backoff_and_retry_after() -> None:
     assert delay_large <= 10.0
 
 
-# --- AIClient Dual-Tier & Key Resolution Tests ---
+# --- AIClient Key Resolution & Availability Tests ---
 
 
-def test_ai_client_default_key(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_ai_client_no_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
     client = AIClient()
-    assert client.api_key == DEFAULT_MISTRAL_API_KEY
+    assert client.api_key is None
+    assert client.is_available() is False
     assert client.is_custom_key is False
-    assert client.effective_rate_limit == 1.0
-    assert client.rate_limiter.is_enabled is True
+    assert client.effective_rate_limit is None
+    assert client.rate_limiter.is_enabled is False
+
+
+def test_ai_client_complete_without_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
+    client = AIClient()
+    result = client.complete("Test prompt")
+    assert result is None
 
 
 def test_ai_client_custom_key_env(monkeypatch: pytest.MonkeyPatch) -> None:

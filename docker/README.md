@@ -10,23 +10,29 @@ You can run Sentinel using Docker by mounting your project directory into the co
 docker run --rm -v $(pwd):/app ghcr.io/ronaldgosso/sentinel:latest scan .
 ```
 
-### AI Assistance (Dual-Tier Access & Rate Limiting)
+### AI Assistance (Mistral AI)
 
-Sentinel includes **built-in AI assistance** by default (rate-limited to 1.0 req/s with automatic retry backoff).
-
-To use your own Mistral AI key for **unrestricted speed**:
+To enable AI enrichment and automated explanations, provide your Mistral API key via an environment variable or CLI option:
 
 ```bash
 docker run --rm \
   -v $(pwd):/app \
   -e MISTRAL_API_KEY="your-api-key" \
-  ghcr.io/ronaldgosso/sentinel:latest scan . --ai
+  ghcr.io/ronaldgosso/sentinel:latest scan .
+```
+
+Or pass the key directly as a CLI argument:
+```bash
+docker run --rm \
+  -v $(pwd):/app \
+  ghcr.io/ronaldgosso/sentinel:latest scan . --ai-api-key "your-api-key"
 ```
 
 You can also customize the client rate limit via `--ai-rate-limit`:
 ```bash
 docker run --rm \
   -v $(pwd):/app \
+  -e MISTRAL_API_KEY="your-api-key" \
   ghcr.io/ronaldgosso/sentinel:latest scan . --ai-rate-limit 2.0
 ```
 

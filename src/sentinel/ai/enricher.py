@@ -62,21 +62,16 @@ class AIEnricher:
                 console.print("[yellow]⚠️ Local Ollama unavailable. Falling back to no AI.[/]")
             else:
                 console.print(
-                    "[yellow]⚠️ No Mistral API key found. Set MISTRAL_API_KEY or use --ai-api-key.[/]"
+                    "[yellow]⚠️ No Mistral API key found. Provide via --ai-api-key or set MISTRAL_API_KEY.[/]"
                 )
         else:
             if not use_local:
-                if self.client.is_custom_key:
-                    console.print("[green]✨ Using custom Mistral API key (Unrestricted speed).[/]")
-                else:
-                    rate_str = (
-                        f"{self.client.effective_rate_limit} req/s"
-                        if self.client.effective_rate_limit
-                        else "rate-limited"
-                    )
+                if self.client.effective_rate_limit:
                     console.print(
-                        f"[yellow]ℹ️ Using default Sentinel AI key ({rate_str}). Set MISTRAL_API_KEY or use --ai-api-key for unrestricted speed.[/]"
+                        f"[green]✨ Mistral AI assistance active ({self.client.effective_rate_limit} req/s).[/]"
                     )
+                else:
+                    console.print("[green]✨ Mistral AI assistance active.[/]")
 
     def enrich(self, findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Enrich each finding with AI analysis."""
