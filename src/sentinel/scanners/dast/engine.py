@@ -35,6 +35,11 @@ class DASTFinding:
 
 class DASTScanner:
     def __init__(self, target_url: str, max_pages: int = 20) -> None:
+        parsed = urlparse(target_url)
+        if parsed.scheme not in ("http", "https") or not parsed.netloc:
+            raise ValueError(
+                f"Invalid target URL '{target_url}': must use http or https scheme and include a valid host."
+            )
         self.target_url = target_url.rstrip("/")
         self.max_pages = max_pages
         self.findings: list[DASTFinding] = []
@@ -83,15 +88,15 @@ class DASTScanner:
 
                 # Check for error-based SQLi (database error messages)
                 if payload_type == "error" and self._check_sql_error(resp.text):
-                        finding = DASTFinding(
-                            severity="High",
-                            location=f"{url} (param: {param})",
-                            message=f"SQL Injection vulnerability detected in parameter '{param}' using payload '{payload}'",
-                            fix="Use parameterised queries or an ORM. Never concatenate user input into SQL.",
-                            cwe="CWE-89",
-                        )
-                        self.findings.append(finding)
-                        return  # stop testing this param once found
+                    finding = DASTFinding(
+                        severity="High",
+                        location=f"{url} (param: {param})",
+                        message=f"SQL Injection vulnerability detected in parameter '{param}' using payload '{payload}'",
+                        fix="Use parameterised queries or an ORM. Never concatenate user input into SQL.",
+                        cwe="CWE-89",
+                    )
+                    self.findings.append(finding)
+                    break  # stop testing payloads for this param once found
 
                 # Time-based detection is harder; we skip for simplicity
 
@@ -138,15 +143,15 @@ class DASTScanner:
 
                 # Check if payload is reflected in the response
                 if payload in resp.text and not self._is_escaped(payload, resp.text):
-                        finding = DASTFinding(
-                            severity="High",
-                            location=f"{url} (param: {param})",
-                            message=f"Reflected XSS vulnerability detected in parameter '{param}' using payload '{payload}'",
-                            fix="Ensure all user input is HTML-escaped before rendering. Use autoescaping in templates.",
-                            cwe="CWE-79",
-                        )
-                        self.findings.append(finding)
-                        return  # stop testing this param
+                    finding = DASTFinding(
+                        severity="High",
+                        location=f"{url} (param: {param})",
+                        message=f"Reflected XSS vulnerability detected in parameter '{param}' using payload '{payload}'",
+                        fix="Ensure all user input is HTML-escaped before rendering. Use autoescaping in templates.",
+                        cwe="CWE-79",
+                    )
+                    self.findings.append(finding)
+                    break  # stop testing payloads for this param
 
     def _is_escaped(self, payload: str, text: str) -> bool:
         """Check if the payload is HTML-escaped in the response."""

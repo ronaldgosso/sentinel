@@ -121,6 +121,7 @@ def scan(
     fail_on: str,
 ) -> None:
     """Scan a Python project for vulnerabilities."""
+    target_path = Path(path).resolve()
     console.print(
         Panel.fit(
             f"[bold blue]🔍 Sentinel v{__version__}[/] – AI‑Powered Security Hardening",
@@ -227,7 +228,7 @@ def scan(
         # Optionally apply fixes in CI mode (with --fix)
         if fix:
             for f in combined:
-                apply_fix(f, dry_run=False)
+                apply_fix(f, dry_run=False, base_dir=target_path)
         # Export if requested
         if output_format:
             fmt = output_format
@@ -297,7 +298,7 @@ def scan(
                 console.print(f"Finding #{idx}: {f.get('id')} at {f.get('location')}")
                 fix_str = str(f.get("fix", ""))
                 if Confirm.ask(f"Apply fix: {fix_str[:100]}...", default=False):
-                    success = apply_fix(f, dry_run=False)
+                    success = apply_fix(f, dry_run=False, base_dir=target_path)
                     if success:
                         console.print("[green]✅ Fix applied.[/]")
                     else:
@@ -402,7 +403,7 @@ def scan(
                         console.print(f"Applying fix for finding #{idx}:")
                         console.print(f"[bold]Original fix suggestion:[/] {f.get('fix')}")
                         if Confirm.ask("Apply this fix?", default=False):
-                            success = apply_fix(f, dry_run=False)
+                            success = apply_fix(f, dry_run=False, base_dir=target_path)
                             if success:
                                 console.print("[green]✅ Fix applied.[/]")
                             else:
@@ -450,7 +451,7 @@ def scan(
                     )
 
                     if f.get("fix") and Confirm.ask("Apply this fix now?", default=False):
-                        success = apply_fix(f, dry_run=False)
+                        success = apply_fix(f, dry_run=False, base_dir=target_path)
                         if success:
                             console.print("[green]✅ Fix applied.[/]")
                         else:
