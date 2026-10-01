@@ -1,17 +1,15 @@
+import contextlib
 import sys
+
 import click
 
 if sys.platform == "win32":
     if hasattr(sys.stdout, "reconfigure"):
-        try:
+        with contextlib.suppress(Exception):
             sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:  # noqa: BLE001
-            pass
     if hasattr(sys.stderr, "reconfigure"):
-        try:
+        with contextlib.suppress(Exception):
             sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:  # noqa: BLE001
-            pass
 
 from .commands.init import init
 from .commands.scan import scan

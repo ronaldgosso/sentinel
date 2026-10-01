@@ -2,10 +2,12 @@ import time
 from unittest.mock import MagicMock, patch
 
 import pytest
+from click.testing import CliRunner
 
 from sentinel.ai.client import AIClient
 from sentinel.ai.enricher import AIEnricher, get_finding_hash
 from sentinel.ai.rate_limiter import RateLimiter
+from sentinel.cli.commands.scan import scan
 
 
 @pytest.fixture(autouse=True)
@@ -294,9 +296,6 @@ def test_ai_enricher_with_vendor() -> None:
 
 
 def test_scan_cli_vendor_options() -> None:
-    from click.testing import CliRunner
-    from sentinel.cli.commands.scan import scan
-
     runner = CliRunner()
     result = runner.invoke(scan, ["--help"])
     assert result.exit_code == 0

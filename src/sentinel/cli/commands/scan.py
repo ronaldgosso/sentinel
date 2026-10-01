@@ -1,6 +1,6 @@
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Any
 
 import click
@@ -148,9 +148,14 @@ def scan(
 
     if ai is False:
         ai_enabled = False
-    elif ai is True or ai_vendor or ai_api_key or ai_model or ai_backend == "local":
-        ai_enabled = True
-    elif has_any_key:
+    elif (
+        ai is True
+        or ai_vendor
+        or ai_api_key
+        or ai_model
+        or ai_backend == "local"
+        or has_any_key
+    ):
         ai_enabled = True
     else:
         ai_enabled = False
