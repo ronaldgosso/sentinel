@@ -3,7 +3,7 @@
 ## v1.1 (Q3 2026)
 - Better DAST (time-based SQLi, CSRF, more payloads)
 - [x] Support for `npm` and `go.mod` in SCA (Completed)
-- [x] Dual-Tier Mistral AI integration with client rate limiting and exponential backoff retry (Completed)
+- [x] Multi-Vendor AI integration (Mistral, OpenAI, Anthropic, Gemini, Groq, Ollama) with interactive CLI credentials and adaptive rate limiting (Completed)
 - [x] Native GitHub Markdown report formatter & automated PR Bot workflow (Completed)
 - Improved AI prompt with few-shot examples
 

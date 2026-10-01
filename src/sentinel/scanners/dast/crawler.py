@@ -10,6 +10,11 @@ logger = logging.getLogger(__name__)
 
 class Crawler:
     def __init__(self, base_url: str, max_pages: int = 20) -> None:
+        parsed = urlparse(base_url)
+        if parsed.scheme not in ("http", "https") or not parsed.netloc:
+            raise ValueError(
+                f"Invalid base URL '{base_url}': must use http or https scheme and include a valid host."
+            )
         self.base_url = base_url.rstrip("/")
         self.max_pages = max_pages
         self.visited: set[str] = set()

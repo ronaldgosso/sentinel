@@ -11,7 +11,9 @@ def backup_file(filepath: Path) -> Path:
     return backup
 
 
-def apply_fix(finding: dict[str, Any], dry_run: bool = False) -> bool:
+def apply_fix(
+    finding: dict[str, Any], dry_run: bool = False, base_dir: Path | None = None
+) -> bool:
     """Apply fix for a single finding. Returns True if successful."""
     location = finding.get("location", "")
     if not location:
@@ -26,11 +28,18 @@ def apply_fix(finding: dict[str, Any], dry_run: bool = False) -> bool:
         filepath = Path(location)
         line_no = finding.get("line", 0)
 
-    if not filepath.exists():
+    try:
+        resolved_path = filepath.resolve()
+        # Path traversal guard: ensure file is within base_dir (or cwd)
+        base = (base_dir or Path.cwd()).resolve()
+        resolved_path.relative_to(base)
+        if not resolved_path.is_file():
+            return False
+    except (ValueError, OSError, RuntimeError):
         return False
 
     # Read file content
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(resolved_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     if line_no < 1 or line_no > len(lines):
@@ -85,10 +94,10 @@ def apply_fix(finding: dict[str, Any], dry_run: bool = False) -> bool:
 
     if not dry_run:
         # Backup file
-        backup_file(filepath)
+        backup_file(resolved_path)
         # Apply change
         lines[line_no - 1] = new_line
-        with open(filepath, "w", encoding="utf-8") as f:
+        with open(resolved_path, "w", encoding="utf-8") as f:
             f.writelines(lines)
 
     return True

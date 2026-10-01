@@ -1,0 +1,8 @@
+tests/
+website/
+dist/
+build/
+.venv/
+venv/
+src/sentinel/scanners/dast/payloads.py
+src/sentinel/scanners/sast/detectors/

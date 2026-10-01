@@ -29,7 +29,7 @@
             </a>
             
             <nav class="nav-links" id="nav-links">
-                <a href="#dual-tier-ai">Dual-Tier AI</a>
+                <a href="#dual-tier-ai">Multi-Vendor AI</a>
                 <a href="#github-bot">GitHub PR Bot</a>
                 <a href="#playground">Vulnerability Playground</a>
                 <a href="#features">Capabilities</a>
@@ -50,7 +50,7 @@
             <div class="hero-container">
                 <div class="hero-content">
                     <div class="badge-pill">
-                        <span class="badge-text">Sentinel v1.0.12 — Dual-Tier AI & GitHub Bot Active</span>
+                        <span class="badge-text">Sentinel v1.0.14 — Multi-Vendor AI & GitHub Bot Active</span>
                     </div>
                     
                     <h1 class="hero-title">
@@ -58,7 +58,7 @@
                     </h1>
                     
                     <p class="hero-description">
-                        Stop security vulnerabilities before they reach production. Sentinel scans SAST, SCA, and DAST across Python, JS/TS, and HTML, explains real exploit paths with built-in Mistral AI, and applies safe auto-fixes with 1 click.
+                        Stop security vulnerabilities before they reach production. Sentinel scans SAST, SCA, and DAST across Python, JS/TS, and HTML, explains real exploit paths with Multi-Vendor AI (Mistral, OpenAI, Claude, Gemini, Groq, Ollama), and applies safe auto-fixes with 1 click.
                     </p>
                     
                     <div class="hero-actions">
@@ -67,7 +67,7 @@
                             <span class="btn-arrow">→</span>
                         </a>
                         <a href="#dual-tier-ai" class="btn btn-secondary" id="hero-learn-ai">
-                            <span>Explore Dual-Tier AI</span>
+                            <span>Explore Multi-Vendor AI</span>
                         </a>
                     </div>
                     
@@ -132,54 +132,54 @@
             </div>
         </section>
 
-        <!-- Dual-Tier AI Section (NEW) -->
+        <!-- Multi-Vendor AI Section (NEW) -->
         <section id="dual-tier-ai" class="section dual-tier-section">
             <div class="section-header">
-                <div class="section-tag">INTELLIGENT AI ENGINE</div>
-                <h2>Dual-Tier AI Architecture</h2>
+                <div class="section-tag">MULTI-VENDOR AI ENGINE</div>
+                <h2>Bring Your Favorite AI Vendor</h2>
                 <p class="section-subtitle">
-                    Enjoy built-in AI assistance with automatic rate limiting and exponential backoff retry, or bring your own Mistral key for unrestricted high-speed analysis.
+                    Select your preferred AI provider — Mistral, OpenAI, Anthropic Claude, Google Gemini, Groq, or local Ollama — via CLI options or interactive prompts with credentials masking.
                 </p>
             </div>
 
             <div class="dual-tier-grid">
-                <!-- Tier 1: Default Key -->
+                <!-- Tier 1: Cloud Multi-Vendor AI -->
                 <div class="tier-card default-tier">
-                    <div class="tier-badge">OUT-OF-THE-BOX</div>
+                    <div class="tier-badge">MULTI-VENDOR CLOUD</div>
                     <div class="tier-icon">⚡</div>
-                    <h3>Default Community Tier</h3>
-                    <p class="tier-desc">Ready instantly with zero setup or registration. Uses Sentinel's embedded Mistral AI engine.</p>
+                    <h3>Cloud AI Providers</h3>
+                    <p class="tier-desc">Seamless integration with OpenAI, Anthropic, Mistral, Google Gemini, and Groq for AST code security analysis.</p>
                     
                     <ul class="tier-features">
-                        <li><span class="check">✓</span> <strong>Included by default:</strong> No API key needed</li>
-                        <li><span class="check">✓</span> <strong>Smart Rate Limiter:</strong> 1.0 req/s client pacing</li>
-                        <li><span class="check">✓</span> <strong>HTTP 429 Adaptive Backoff:</strong> Exponential retry & Retry-After support</li>
-                        <li><span class="check">✓</span> <strong>SQLite Local Cache:</strong> Zero repeated queries</li>
+                        <li><span class="check">✓</span> <strong>Vendor Selection:</strong> <code>--ai-vendor [mistral|openai|anthropic|gemini|groq]</code></li>
+                        <li><span class="check">✓</span> <strong>Credential Inputs:</strong> Pass <code>--ai-api-key</code>, set environment vars, or prompt interactively</li>
+                        <li><span class="check">✓</span> <strong>Adaptive Rate Limiting:</strong> Automatic exponential backoff on HTTP 429 & server errors</li>
+                        <li><span class="check">✓</span> <strong>SQLite Local Cache:</strong> Zero repeated queries and blazing fast scans</li>
                     </ul>
 
                     <div class="code-snippet-box">
                         <div class="snippet-label">Terminal Command</div>
-                        <code>sentinel scan .</code>
+                        <code>sentinel scan . --ai-vendor openai --ai-api-key sk-proj-...</code>
                     </div>
                 </div>
 
-                <!-- Tier 2: Custom Key -->
+                <!-- Tier 2: Local AI (Ollama) -->
                 <div class="tier-card custom-tier highlight-tier">
-                    <div class="tier-badge popular-badge">UNRESTRICTED SPEED</div>
+                    <div class="tier-badge popular-badge">100% OFFLINE & PRIVATE</div>
                     <div class="tier-icon">🚀</div>
-                    <h3>Bring Your Own Key (BYOK)</h3>
-                    <p class="tier-desc">Provide your personal Mistral API key for unthrottled maximum throughput and custom models.</p>
+                    <h3>Local AI (Ollama)</h3>
+                    <p class="tier-desc">Zero external cloud calls and zero credentials needed. Run open-weights models locally on your hardware for absolute security.</p>
                     
                     <ul class="tier-features">
-                        <li><span class="check">✓</span> <strong>Unrestricted Speed:</strong> Artificial rate limiting bypassed</li>
-                        <li><span class="check">✓</span> <strong>Custom Models:</strong> `mistral-small-latest`, `codestral-latest`, etc.</li>
-                        <li><span class="check">✓</span> <strong>Custom Pacing Option:</strong> `--ai-rate-limit <rps>`</li>
-                        <li><span class="check">✓</span> <strong>Local Backend:</strong> Fully offline with `--ai-backend local` (Ollama)</li>
+                        <li><span class="check">✓</span> <strong>Zero Cloud Calls:</strong> Data never leaves your machine</li>
+                        <li><span class="check">✓</span> <strong>Custom Local Models:</strong> `mistral:7b-instruct`, `codellama`, `llama3`, `deepseek`</li>
+                        <li><span class="check">✓</span> <strong>Zero API Keys Needed:</strong> Runs directly against your local Ollama daemon</li>
+                        <li><span class="check">✓</span> <strong>Instant Switch:</strong> <code>--ai-vendor ollama</code> or <code>--ai-backend local</code></li>
                     </ul>
 
                     <div class="code-snippet-box">
                         <div class="snippet-label">Terminal Command</div>
-                        <code>export MISTRAL_API_KEY=your-key<br>sentinel scan . --ai-model codestral-latest</code>
+                        <code>sentinel scan . --ai-vendor ollama --ai-model codellama</code>
                     </div>
                 </div>
             </div>
@@ -477,24 +477,29 @@ def get_user(user_id):
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Standard Scan</strong></td>
+                            <td><strong>Standard Offline Scan</strong></td>
                             <td><code>sentinel scan .</code></td>
-                            <td>Scans project with built-in rate-limited AI assistance</td>
+                            <td>Scans project offline (SAST & SCA) with zero external dependencies</td>
                         </tr>
                         <tr>
-                            <td><strong>Unrestricted AI</strong></td>
-                            <td><code>sentinel scan . --ai-api-key &lt;key&gt;</code></td>
-                            <td>Runs with your personal Mistral key at full unrestricted speed</td>
+                            <td><strong>Interactive AI Assistant</strong></td>
+                            <td><code>sentinel scan . --ai</code></td>
+                            <td>Prompts in CLI to select vendor (Mistral, OpenAI, Claude, Gemini, Groq, Ollama) and input credentials</td>
                         </tr>
                         <tr>
-                            <td><strong>Custom AI Model</strong></td>
-                            <td><code>sentinel scan . --ai-model codestral-latest</code></td>
-                            <td>Uses designated cloud model (e.g. Codestral or Mistral-Small)</td>
+                            <td><strong>Cloud Vendor & API Key</strong></td>
+                            <td><code>sentinel scan . --ai-vendor openai --ai-api-key &lt;key&gt;</code></td>
+                            <td>Enriches findings using OpenAI, Anthropic, Mistral, Gemini, or Groq</td>
                         </tr>
                         <tr>
-                            <td><strong>Custom Rate Limit</strong></td>
-                            <td><code>sentinel scan . --ai-rate-limit 2.0</code></td>
-                            <td>Controls requests-per-second limit to match your quota</td>
+                            <td><strong>100% Offline AI (Ollama)</strong></td>
+                            <td><code>sentinel scan . --ai-vendor ollama</code></td>
+                            <td>Uses local Ollama open-weights models (100% private, no API keys)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom AI Model Override</strong></td>
+                            <td><code>sentinel scan . --ai-vendor anthropic --ai-model claude-3-5-sonnet-20241022</code></td>
+                            <td>Overrides default model with any vendor model of your choice</td>
                         </tr>
                         <tr>
                             <td><strong>Generate PR Bot</strong></td>

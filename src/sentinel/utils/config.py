@@ -16,6 +16,7 @@ def load_config() -> dict[str, Any]:
         "exclude_patterns": [".venv", "venv", "env", "__pycache__", ".git", "tests"],
         "severity_threshold": "medium",
         "ai_enabled": True,
+        "ai_vendor": "mistral",
         "ai_rate_limit": None,
         "ai_cloud_model": "mistral-small-latest",
         "max_workers": 4,

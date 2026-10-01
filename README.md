@@ -18,7 +18,7 @@
 - **SAST** - detects SQLi, XSS, command injection, hardcoded secrets, insecure crypto, and frontend/HTML vulnerabilities.
 - **SCA** - checks dependencies against OSV.dev and NVD.
 - **DAST** - optionally tests running web apps.
-- **AI enrichment** (Mistral) - re-evaluates severity, explains attack scenarios, suggests fixes.
+- **Multi-Vendor AI enrichment** (Mistral, OpenAI, Anthropic, Gemini, Groq, Ollama) - re-evaluates severity, explains attack scenarios, suggests fixes.
 - **Interactive TUI** - no more grepping JSON logs.
 - **Auto-fix** - applies safe remediations.
 - **CI/CD ready** - GitHub Action, Docker, PyPI.
@@ -31,15 +31,29 @@
 # Install
 pip install sentinel-scanner
 
-# Scan (Uses built-in AI key with 1.0 req/s rate limiting by default)
+# Standard offline scan (SAST & SCA)
 sentinel scan .
 
-# With your own Mistral AI key (Unrestricted speed)
-export MISTRAL_API_KEY=your-key
+# Interactive AI assistance (prompts for vendor & credentials if needed)
+sentinel scan . --ai
+
+# Choose vendor and provide API key directly via CLI
+sentinel scan . --ai-vendor openai --ai-api-key sk-proj-...
+sentinel scan . --ai-vendor anthropic --ai-api-key sk-ant-...
+sentinel scan . --ai-vendor mistral --ai-api-key your-key
+sentinel scan . --ai-vendor gemini --ai-api-key your-key
+sentinel scan . --ai-vendor groq --ai-api-key gsk_...
+
+# 100% Offline AI via local Ollama
+sentinel scan . --ai-vendor ollama --ai-model mistral:7b-instruct
+
+# Or configure via environment variables
+export OPENAI_API_KEY=sk-...    # Automatically uses OpenAI
+export MISTRAL_API_KEY=your-key # Automatically uses Mistral
 sentinel scan .
 
-# Or pass custom key and rate limits directly via CLI
-sentinel scan . --ai-api-key your-key --ai-rate-limit 5.0
+# Optional custom rate limits or model overrides
+sentinel scan . --ai-vendor openai --ai-model gpt-4o --ai-rate-limit 2.0
 ```
 
 For full documentation, visit [Sentinel Docs](https://ronaldgosso.github.io/sentinel).
