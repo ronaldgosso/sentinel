@@ -23,7 +23,7 @@ if (copyInitBtn) {
 // Interactive Terminal Typing Animation with Multi-Vendor AI & Live Scans
 const terminalLines = [
     '<span style="color: #60a5fa;">$ sentinel scan . --ai-vendor openai</span>',
-    '<span style="color: #94a3b8;">🔍 Sentinel v1.0.12 – AI-Powered Security Hardening</span>',
+    '<span style="color: #94a3b8;">🔍 Sentinel v1.0.14 – AI-Powered Security Hardening</span>',
     '<span style="color: #10b981;">✨ OpenAI AI active (gpt-4o-mini).</span>',
     '<span style="color: #38bdf8;">[1/3] SAST: AST analysis of Python & TypeScript...</span>',
     '<span style="color: #ef4444;">🔴 Critical: SQL Injection found in auth/login.py:42</span>',
