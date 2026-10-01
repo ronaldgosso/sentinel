@@ -10,30 +10,39 @@ You can run Sentinel using Docker by mounting your project directory into the co
 docker run --rm -v $(pwd):/app ghcr.io/ronaldgosso/sentinel:latest scan .
 ```
 
-### AI Assistance (Mistral AI)
+### AI Assistance (Multi-Vendor: Mistral, OpenAI, Anthropic, Gemini, Groq, Ollama)
 
-To enable AI enrichment and automated explanations, provide your Mistral API key via an environment variable or CLI option:
+To enable AI enrichment and automated explanations, specify your preferred vendor and pass credentials via environment variables or CLI options:
 
+**OpenAI:**
+```bash
+docker run --rm \
+  -v $(pwd):/app \
+  -e OPENAI_API_KEY="sk-..." \
+  ghcr.io/ronaldgosso/sentinel:latest scan . --ai-vendor openai
+```
+
+**Anthropic Claude:**
+```bash
+docker run --rm \
+  -v $(pwd):/app \
+  -e ANTHROPIC_API_KEY="sk-ant-..." \
+  ghcr.io/ronaldgosso/sentinel:latest scan . --ai-vendor anthropic
+```
+
+**Mistral AI:**
 ```bash
 docker run --rm \
   -v $(pwd):/app \
   -e MISTRAL_API_KEY="your-api-key" \
-  ghcr.io/ronaldgosso/sentinel:latest scan .
+  ghcr.io/ronaldgosso/sentinel:latest scan . --ai-vendor mistral
 ```
 
-Or pass the key directly as a CLI argument:
+**Or pass API keys directly via CLI arguments:**
 ```bash
 docker run --rm \
   -v $(pwd):/app \
-  ghcr.io/ronaldgosso/sentinel:latest scan . --ai-api-key "your-api-key"
-```
-
-You can also customize the client rate limit via `--ai-rate-limit`:
-```bash
-docker run --rm \
-  -v $(pwd):/app \
-  -e MISTRAL_API_KEY="your-api-key" \
-  ghcr.io/ronaldgosso/sentinel:latest scan . --ai-rate-limit 2.0
+  ghcr.io/ronaldgosso/sentinel:latest scan . --ai-vendor openai --ai-api-key "sk-..."
 ```
 
 ### Exporting Reports

@@ -45,12 +45,14 @@ class AIEnricher:
     def __init__(
         self,
         api_key: str | None = None,
+        vendor: str | None = None,
         use_local: bool = False,
         rate_limit: float | None = None,
         model: str | None = None,
     ) -> None:
         self.client = AIClient(
             api_key=api_key,
+            vendor=vendor,
             use_local=use_local,
             rate_limit=rate_limit,
             model=model,
@@ -58,20 +60,29 @@ class AIEnricher:
         self.available = self.client.is_available()
         init_cache()
         if not self.available:
-            if use_local:
-                console.print("[yellow]⚠️ Local Ollama unavailable. Falling back to no AI.[/]")
-            else:
+            if self.client.use_local:
                 console.print(
-                    "[yellow]⚠️ No Mistral API key found. Provide via --ai-api-key or set MISTRAL_API_KEY.[/]"
+                    f"[yellow]⚠️ Local Ollama ({self.client.model}) unavailable. Falling back to standard scan.[/]"
+                )
+            else:
+                env_hint = self.client.vendor_info.get("env_key") or "API key"
+                console.print(
+                    f"[yellow]⚠️ No {self.client.vendor_name} API key found. Provide via --ai-api-key or set {env_hint}.[/]"
                 )
         else:
-            if not use_local:
-                if self.client.effective_rate_limit:
-                    console.print(
-                        f"[green]✨ Mistral AI assistance active ({self.client.effective_rate_limit} req/s).[/]"
-                    )
-                else:
-                    console.print("[green]✨ Mistral AI assistance active.[/]")
+            if not self.client.use_local:
+                rate_str = (
+                    f", {self.client.effective_rate_limit} req/s"
+                    if self.client.effective_rate_limit
+                    else ""
+                )
+                console.print(
+                    f"[green]✨ {self.client.vendor_name} AI active ({self.client.model}{rate_str}).[/]"
+                )
+            else:
+                console.print(
+                    f"[green]✨ Local Ollama AI active ({self.client.model}).[/]"
+                )
 
     def enrich(self, findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Enrich each finding with AI analysis."""

@@ -20,15 +20,15 @@ if (copyInitBtn) {
     });
 }
 
-// Interactive Terminal Typing Animation with Dual-Tier AI & Live Scans
+// Interactive Terminal Typing Animation with Multi-Vendor AI & Live Scans
 const terminalLines = [
-    '<span style="color: #60a5fa;">$ sentinel scan . --ai</span>',
+    '<span style="color: #60a5fa;">$ sentinel scan . --ai-vendor openai</span>',
     '<span style="color: #94a3b8;">🔍 Sentinel v1.0.12 – AI-Powered Security Hardening</span>',
-    '<span style="color: #eab308;">ℹ️ Using default Sentinel AI key (1.0 req/s pacing).</span>',
+    '<span style="color: #10b981;">✨ OpenAI AI active (gpt-4o-mini).</span>',
     '<span style="color: #38bdf8;">[1/3] SAST: AST analysis of Python & TypeScript...</span>',
     '<span style="color: #ef4444;">🔴 Critical: SQL Injection found in auth/login.py:42</span>',
     '<span style="color: #f59e0b;">🟠 High: Hardcoded Secret found in config/db.py:5</span>',
-    '<span style="color: #a855f7;">🤖 AI (Mistral): Evaluating exploit scenarios & fixes...</span>',
+    '<span style="color: #a855f7;">🤖 AI (OpenAI): Evaluating exploit scenarios & fixes...</span>',
     '<span style="color: #10b981;">✅ AI Verified: Attack path confirmed (CWE-89).</span>',
     '<span style="color: #e2e8f0;">Apply auto-hardening fix to auth/login.py? [y/N]: </span><span style="color: #10b981;">y</span>',
     '<span style="color: #10b981;">✨ Applied parameterized query auto-fix successfully!</span>'

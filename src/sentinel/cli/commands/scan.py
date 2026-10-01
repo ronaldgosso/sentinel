@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+import sys
 from typing import Any
 
 import click
@@ -10,6 +12,7 @@ from rich.prompt import Confirm, Prompt
 from rich.table import Table
 
 from ... import __version__
+from ...ai.client import VENDOR_CONFIGS
 from ...ai.enricher import AIEnricher
 from ...fixer.engine import apply_fix
 from ...report.formatters import to_html, to_json, to_markdown, to_sarif
@@ -42,13 +45,32 @@ def run_scan(
 
 @click.command()
 @click.argument("path", default=".", type=click.Path(exists=True))
-@click.option("--ai/--no-ai", default=True, help="Enable/disable AI analysis")
 @click.option(
-    "--ai-backend", type=click.Choice(["local", "cloud"]), default="cloud", help="AI backend"
+    "--ai/--no-ai",
+    "ai",
+    default=None,
+    help="Enable/disable AI analysis (prompts for credentials if needed)",
+)
+@click.option(
+    "--ai-vendor",
+    "--ai-provider",
+    "ai_vendor",
+    type=click.Choice(
+        ["mistral", "openai", "anthropic", "gemini", "groq", "ollama"],
+        case_sensitive=False,
+    ),
+    default=None,
+    help="Choose AI vendor/provider (mistral, openai, anthropic, gemini, groq, ollama)",
+)
+@click.option(
+    "--ai-backend",
+    type=click.Choice(["local", "cloud"]),
+    default=None,
+    help="AI backend (cloud or local/ollama)",
 )
 @click.option(
     "--ai-api-key",
-    help="Mistral API key for AI assistance (can also be set via MISTRAL_API_KEY env)",
+    help="API key for selected AI vendor (or set vendor env var)",
 )
 @click.option(
     "--ai-rate-limit",
@@ -57,7 +79,8 @@ def run_scan(
     help="AI requests per second limit (optional)",
 )
 @click.option(
-    "--ai-model", help="AI model override (e.g. mistral-small-latest or mistral:7b-instruct)"
+    "--ai-model",
+    help="AI model override (e.g. mistral-small-latest, gpt-4o-mini, claude-3-5-haiku-20241022, gemini-1.5-flash)",
 )
 @click.option("--ci", is_flag=True, help="CI mode – non-interactive, exit with code")
 @click.option("--skip-sast", is_flag=True, help="Skip SAST scanning")
@@ -82,8 +105,9 @@ def run_scan(
 )
 def scan(
     path: str,
-    ai: bool,
-    ai_backend: str,
+    ai: bool | None,
+    ai_vendor: str | None,
+    ai_backend: str | None,
     ai_api_key: str | None,
     ai_rate_limit: float | None,
     ai_model: str | None,
@@ -113,13 +137,89 @@ def scan(
     sev_order = {"critical": 4, "high": 3, "medium": 2, "low": 1}
     threshold = sev_order.get(fail_on, 3)
 
+    # Determine AI assistance setting and credentials
+    is_interactive = not ci and sys.stdin.isatty()
+    has_any_key = any(
+        os.getenv(cfg.get("env_key", ""))
+        for cfg in VENDOR_CONFIGS.values()
+        if cfg.get("env_key")
+    )
+
+    if ai is False:
+        ai_enabled = False
+    elif ai is True or ai_vendor or ai_api_key or ai_model or ai_backend == "local":
+        ai_enabled = True
+    elif has_any_key:
+        ai_enabled = True
+    else:
+        ai_enabled = False
+
+    if ai_enabled:
+        # Handle --ai-backend local
+        if ai_backend == "local":
+            ai_vendor = "ollama"
+
+        # If vendor not specified, auto-detect or prompt in interactive mode
+        if not ai_vendor:
+            for v_name, v_info in VENDOR_CONFIGS.items():
+                env_k = v_info.get("env_key")
+                if env_k and os.getenv(env_k):
+                    ai_vendor = v_name
+                    break
+
+            if not ai_vendor:
+                if is_interactive and ai is True:
+                    console.print("\n[bold cyan]🤖 AI Assistance Configuration[/]")
+                    console.print(
+                        "Supported AI vendors:\n"
+                        "  • [bold]mistral[/]   - Mistral AI (Mistral-Small, Codestral)\n"
+                        "  • [bold]openai[/]    - OpenAI (GPT-4o, GPT-4o-mini)\n"
+                        "  • [bold]anthropic[/] - Anthropic (Claude 3.5 Sonnet / Haiku)\n"
+                        "  • [bold]gemini[/]    - Google Gemini (Gemini 1.5 Flash / Pro)\n"
+                        "  • [bold]groq[/]      - Groq Cloud (Llama 3.3)\n"
+                        "  • [bold]ollama[/]    - Local Ollama (100% Offline)\n"
+                    )
+                    vendor_choice = Prompt.ask(
+                        "Select AI vendor",
+                        choices=["mistral", "openai", "anthropic", "gemini", "groq", "ollama", "none"],
+                        default="mistral",
+                    )
+                    if vendor_choice == "none":
+                        ai_enabled = False
+                    else:
+                        ai_vendor = vendor_choice
+                else:
+                    ai_vendor = "mistral"
+
+        # If cloud vendor chosen, check if API key is provided or prompt
+        if ai_enabled and ai_vendor and ai_vendor.lower() != "ollama":
+            vendor_cfg = VENDOR_CONFIGS.get(ai_vendor.lower(), VENDOR_CONFIGS["mistral"])
+            env_var = vendor_cfg.get("env_key")
+            has_key = bool(ai_api_key or (env_var and os.getenv(env_var)))
+
+            if not has_key and is_interactive:
+                vendor_name = vendor_cfg.get("display_name", ai_vendor)
+                key_input = Prompt.ask(
+                    f"🔑 Enter {vendor_name} API Key (or press Enter to run without AI)",
+                    password=True,
+                    default="",
+                ).strip()
+                if key_input:
+                    ai_api_key = key_input
+                else:
+                    console.print(
+                        f"[yellow]No {vendor_name} key entered. Proceeding with standard scan.[/]"
+                    )
+                    ai_enabled = False
+
     if ci:
         console.print("[yellow]CI mode – running non-interactive scan.[/]")
         combined = run_scan(path, skip_sast=skip_sast, skip_sca=skip_sca, dast_url=dast)
-        if ai:
+        if ai_enabled:
             enricher = AIEnricher(
                 api_key=ai_api_key,
-                use_local=(ai_backend == "local"),
+                vendor=ai_vendor,
+                use_local=(ai_backend == "local" or ai_vendor == "ollama"),
                 rate_limit=ai_rate_limit,
                 model=ai_model,
             )
@@ -173,15 +273,19 @@ def scan(
         for task in tasks:
             progress.update(task, completed=True)
 
-        if ai and combined:
+        if ai_enabled and combined:
             enricher = AIEnricher(
                 api_key=ai_api_key,
-                use_local=(ai_backend == "local"),
+                vendor=ai_vendor,
+                use_local=(ai_backend == "local" or ai_vendor == "ollama"),
                 rate_limit=ai_rate_limit,
                 model=ai_model,
             )
             if enricher.available:
-                ai_task = progress.add_task("[magenta]AI: Mistral analysing findings...", total=None)
+                ai_task = progress.add_task(
+                    f"[magenta]AI ({enricher.client.vendor_name}): analysing findings...",
+                    total=None,
+                )
                 combined = enricher.enrich(combined)
                 progress.update(ai_task, completed=True)
 
