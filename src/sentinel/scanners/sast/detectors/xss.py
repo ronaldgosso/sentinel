@@ -13,10 +13,10 @@ def detect_xss(tree: ast.AST | None, source: str, filename: str) -> list[dict[st
         (r"{% autoescape false %}", "Autoescape disabled in Jinja template"),
         (r"{{.*?\|raw}}", "Use of '|raw' filter in Twig/Django (XSS risk)"),
         (r"mark_safe\s*\(", "mark_safe() used in Django (XSS risk if input unsanitised)"),
-        (r"HTML\s*\(.*?\)", "HTML() constructor in Flask/JavaScript context (XSS risk)"),
+        (r"\bHTML\s*\(.*?\)", "HTML() constructor in Flask/JavaScript context (XSS risk)"),
         (r"innerHTML\s*=", "innerHTML assignment in JavaScript (XSS risk)"),
         (r"document\.write\s*\(", "document.write() in JavaScript (XSS risk)"),
-        (r"\.html\s*\(", "jQuery .html() with unsanitised data"),
+        (r"\$\([^)]+\)\.html\s*\(", "jQuery .html() with unsanitised data"),
     ]
 
     for pattern, msg in xss_patterns:
